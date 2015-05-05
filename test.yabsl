@@ -1,0 +1,182 @@
+#note, this is a comment
+#all identifiers will be in allcaps here, that's just to make them visually distinct for now
+#so you can tell them apart from the keywords
+
+model DOOR {
+	mesh FRAME { #note, this is now DOOR.FRAME
+		loadfile FRAME.OBJ
+		genprim sphere 
+			#generating primitives may not be necessary, I haven't given it much thought
+			#implement it if you want to but I don't see much use for it
+			#except maybe debugging or whatnot
+	}
+	mesh DOOR_LEFT {
+		loadfile BLAH1.OBJ
+		loadfile BLAH2.OBJ
+		#possible multiple mesh generating commands
+		#not sure if this is necessary
+	}
+	mesh DOOR_RIGHT {
+		loadfile BLAH3.OBJ
+	}
+	mesh DOOR_LEFT.WHIRLIGIG {
+		#note, this should now be a child of DOOR_LEFT
+		#don't know if we should support defining a mesh inside another mesh, 
+		#like "mesh A { mesh B1 {...} mesh B2 {...} ...}"
+		#or do it this way 
+		
+		loadfile WHIRL.OBJ
+		
+	}
+	mesh BLANK {
+		#meshes can be blank
+	}
+	
+
+
+	#vars are only defined top-level, directly in the model definition
+	#note, for this file in particular (for demo purposes), I'm assuming the bits need to be shifted around as follows
+	#
+	#the frame is a 1x1 square in the xz plane, going from origin to 1,1,0
+	#both door halves are 0.5 x 1 squares going from the origin to 0.5, 1,0
+	#therefore the left door's hinge would be at 0,y,0 and right door's is at 0.5,y,0
+	#whirligig is a relatively small circle in xy plane at the origin
+	
+	#the goal is to have the door filling the doorframe, with the whirligig always spinning,
+	#attached to the left door in such a way that when the doors are closed, it is in the center
+	#and when open, it slides away as if attached to the left door
+
+	var DOOR_SLIDE_LEFT
+	var DOOR_SWING_LEFT
+	var DOOR_SLIDE_RIGHT
+	var DOOR_SWING_RIGHT
+	var WHIRLIGIG_SPIN
+
+	#these anims are partial and shouldn't be used on their own.
+	#maybe have some keyword for this, like "partial anim FOO {...}"
+	#just a thought for now, gotta get the rest of it working before
+	#we mess around with improvements
+
+		#used to set default values for all vars
+		anim CLEAR {
+			set DOOR_SLIDE_LEFT 0
+			set DOOR_SWING_LEFT 0
+			set DOOR_SLIDE_RIGHT 0
+			set DOOR_SWING_RIGHT 0
+		}
+
+		anim CLOSED {
+			#specifies that this is a static anim
+			duration 0	
+
+			#this calls another animation, setting its vars, and returns
+			animate WHIRL_SPIN
+			animate CLEAR
+		}
+
+		anim WHIRL_SPIN {
+			duration 1
+			vary WHIRLIGIG_SPIN { 0, 0; 1,360}
+			next loop
+		}
+
+	#opened state, not moving
+	anim OPEN_SLIDE {
+		#the "duration 0" might be left implied
+		#or we can force it to be explicit if that's easier
+
+		#duration 0
+
+		animate WHIRL_SPIN
+		animate CLEAR
+
+		set DOOR_SLIDE_LEFT -0.5
+		set DOOR_SLIDE_RIGHT 0.5
+	}
+
+	#swung open state, not moving
+	anim OPEN_ROTATE {
+		animate WHIRL_SPIN
+		animate CLEAR
+
+		#these will probably be left as degrees, then converted to 
+		#radians by the parser because it's easier on us
+		set DOOR_SWING_LEFT 90
+		set DOOR_SWING_RIGHT 90
+	}
+	
+	#slides the doors open the
+	anim OPENING_SLIDE {
+		duration 2 #lasts 2 seconds
+
+		animate WHIRL_SPIN
+		animate CLEAR
+	
+		#vary will, create a function out of the provided list of ordered
+		#pairs, and evaluate it at whatever portion of the duration has 
+		#elapsed. The function will always be evaluated on 0-1, this
+		#makes it easier to speed up or slow down the animation without 
+		#changing every number
+		#e.g., 2 second duration, 1.5 seconds in it will evaluate the
+		#provided function at 0.75, then assign that to DOOR_SLIDE_LEFT
+		
+		#for now the definition of the functions is just a semicolon-delimited
+		#list of comma-separated ordered pairs of arbitrary length
+		#spacing optional
+
+		vary DOOR_SLIDE_LEFT { 0,0 ; 0.5, -0.5; 1, -0.5; }
+		vary DOOR_SLIDE_RIGHT { 0,0 ; 0.5, 0.5; 1, 0.5; }
+		#we might add more to the varying spec, allowing for things like different curves
+		#(linear, bezier, polynomial, etc) or things like multiplying the whole
+		#thing by a scalar, again, to allow us to modify it without redoing everything
+
+		#when done, set the anim state to OPEN_SLIDE
+		next OPEN_SLIDE
+	}
+
+	anim OPENING_ROTATE {
+		duration 5 #opens slowly, why not
+
+		animate WHIRL_SPIN
+		animate_CLEAR
+
+		vary DOOR_SWING_LEFT { 0,0 ; 0, 60; 1, 90; }
+		vary DOOR_SWING_RIGHT { 0,0 ; 0, -60; 1, -90; }
+	
+		next OPEN_ROTATE
+	}
+
+
+
+
+
+
+	#don't transform the frame, in other words this is somewhat optional
+	transform FRAME {}
+
+	transform DOOR_LEFT {
+		#rotate it about the y axis
+		r 0 DOOR_SWING_LEFT 0
+		#slide it in x
+		t DOOR_SLIDE_LEFT 0 0
+	}
+	transform DOOR_RIGHT {
+		#this one's tricky, it's hinge starts at x=0.5
+		#so we shift it to the origin, spin it, then put it back
+		t -0.5 0 0
+		r 0 DOOR_SWING_RIGHT 0
+		t 0.5 0 0
+
+		t DOOR_SLIDE_RIGHT 0 0
+	}
+	transform WHIRLIGIG {
+		#spin it about z axis while it's still at the origin
+		r 0 0 WHIRLIGIG_SPIN
+		#shift it to where you want it to be relative to the door
+		#before any transforms are applied to the door
+		#we want it to be right middle
+		t 0.5, 0.5, 0
+
+		#after that it should follow the door by virtue of being awesome
+	}
+}
