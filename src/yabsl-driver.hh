@@ -30,10 +30,12 @@ class yabsl_driver
 	public:
 		yabsl_driver ();
 		virtual ~yabsl_driver ();
-		
+	
+		// hash table of variables
 		std::map<std::string, int> variables;
 
-
+		// placeholder
+		int test;
 
 
 		// Scanning Phase ////////////////////////

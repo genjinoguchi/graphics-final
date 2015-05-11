@@ -61,7 +61,7 @@
 // we're using variant-based semantic values.
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
-%type  <void> 
+%type  <int> EXPR
 
 /* //////////////////////////////////////////////////////// */
 /* ======================== TYPES========================== */
@@ -77,7 +77,7 @@
 
 
 // For printing values
-%printer { yyoutput << $$; } <*>;
+//%printer { yyoutput << $$; } <*>;
 
 
 /* ========================= END DEFINITIONS ============================== */
@@ -87,15 +87,14 @@
 
 
 /* ============================ RULES ===================================== */
-
-//%start unit;
-
+%start unit;
 
 
 
 
 
-/* ========================= END RULES ================================== */
+
+/* ========================= END SUBROUTINES ============================= */
 
 
 %%

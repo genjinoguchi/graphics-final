@@ -50,38 +50,84 @@
 
 // Start Conditions. Use %s for inclusive conditions and %x for exclusive ones.
 %s COMMENT			/* start condition for comments 	*/
-%s QUOTES			/* start condition for strings  	*/
-%x PARENS			/* start condition for parentheses	*/
-%x BRACKETS			/* start condition for brackets 	*/
+// The scanner found the tokens "anim/model/mesh"
+%x DEF_ANIM 		/* start condition expecting anim name 	*/
+%x DEF_MODEL 		/* start condition expecting model name	*/
+%x DEF_TRANS 		/* start condition expecting transformation name	*/
+%x DEF_VAR 			/* start condition expecting var name	*/
+%x DEF_MESH			/* start condition expecting mesh name	*/
+// The type of block that the scanner is currently parsing through
+%x MODEL_BLOCK		/* start condition for defining models	*/
+%x MESH_BLOCK		/* start condition for defining meshes	*/
+%x ANIM_BLOCK		/* start condition for defining anims	*/
+%x TRANS_BLOCK		/* start condition for defining transformations	*/
+%x VAR_BLOCK		/* start condition for defining variables	*/
+
+// Regex Macros
+VARNAME		[A-Za-z_][A-Za-z0-9_]*
+SPACE		[ \t]
+WHITESPACE	[ \t\n]
+
 
 
 %%
 
 
 /* ============================ RULES ===================================== */
-
 %{
 		// Code run each time yylex is called.
 		loc.step ();
 %}
 
 // WHITESPACE
-[ \t]+		loc.step ();
-[\n]+		loc.lines (yyleng); loc.step ();
+{SPACE}		loc.step ();
+{[\n]+		loc.lines (yyleng); loc.step ();
 
 /* //////////////////////////////////////////////////////////////////// */
+/* ========================== ERROR CHECKING ========================== */	
+/* //////////////////////////////////////////////////////////////////// */
 /* ============================ VARIABLES ============================= */	
-[A-Za-z_][A-Za-z0-9_]* {
+<DEF_MODEL>{VARNAME}			{
 	yylval.variableVal = atoi(yytext);
 	#ifdef DEBUG
-	cout << "Found variable : " << yytext << endl;
+	cout << "Creating new model : " << yytext << endl;
 	#endif
 
-	yy::yabsl_parser::make_
+	/* Create a new model and put it in the driver */
+
+
+}
+<DEF_MESH>{VARNAME}			{
+	yylval.variableVal = atoi(yytext);
+	#ifdef DEBUG
+	cout << "Found mesh name : " << yytext << endl;
+	#endif
+
+		
+}
+<DEF_TRANS>{VARNAME}			{
+	yylval.variableVal = atoi(yytext);
+	#ifdef DEBUG
+	cout << "Found trans name : " << yytext << endl;
+	#endif
+
+	/* Search for yytext in model's list of meshes */
+
+
 }
 /* /////////////////////////////////////////////////////////////////// */
+/* ============================ FLOATS =============================== */	
+(-)?[0-9]+(\.)[0-9]+		{
+	yylval->floatVal = atof(yytext);
+	#ifdef DEBUG
+	cout << "Found float : " << yytext << endl;
+	#endif
+
+	return FLOAT;
+}
+/* //////////////////////////////////////////////////////////////////// */
 /* ============================ INTEGERS ============================= */	
-(-)?[0-9] {
+(-)?[0-9] 					{
 	yylval->integerVal = atoi(yytext);
 	#ifdef DEBUG
 	cout << "Found integer : " << yytext << endl;
@@ -90,34 +136,23 @@
 	return INTEGER
 }
 /* /////////////////////////////////////////////////////////////////// */
-/* ============================ FLOATS =============================== */	
-(-)?[0-9]+(\.)[0-9]+ {
-	yylval->floatVal = atof(yytext);
-	#ifdef DEBUG
-	cout << "Found integer : " << to_string(yylval->floatVal) << endl;
-	#endif
+/* ============================= DEFS ================================= */	
+(model|anim|var|transform)	{
 
-	return FLOAT;
 }
 /* //////////////////////////////////////////////////////////////////// */
 /* ============================ BRACKETS ============================== */	
-\{ {
-	#ifdef DEBUG
-	cout << "Found open bracket" << endl;
-	#endif
-
-	return OPENBRACKET;
-}
-\} {
+\}							{
 	#ifdef DEBUG
 	cout << "Found closing bracket" << endl;
 	#endif
 
+	yy_pop_state();
 	return CLOSEBRACKET;
 }
 /* //////////////////////////////////////////////////////////////////// */
 /* ============================ COMMENTS ============================== */	
-#(.*) {
+<*>#(.*)						{
 	#ifdef DEBUG
 	cout << "Found line comment" << endl;
 	#endif
