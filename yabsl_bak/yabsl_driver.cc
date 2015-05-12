@@ -27,7 +27,7 @@ yabsl_driver::parse (const std::string& f)
 }
 
 void
-yabsl_driver::error (const yy:location& l, const std::string& m)
+yabsl_driver::error (const yy::location& l, const std::string& m)
 {
 	std::cerr << l << ": " << m << std::endl;
 }
@@ -36,4 +36,19 @@ void
 yabsl_driver::error (const std::string& m)
 {
   std::cerr << m << std::endl;
+}
+
+void
+yabsl_driver::print_debug (const yy::location& l, const std::string& m)
+{
+	#ifdef DEBUG
+	std::cout << "DEBUG : " << l << m << std::endl;
+	#endif
+}
+
+void yabsl_driver::print_debug (const std::string& m)
+{
+	#ifdef DEBUG
+	std::cout << "DEBUG : " << m << std::endl;
+	#endif
 }

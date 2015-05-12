@@ -1,4 +1,10 @@
 # This is a comment
 # Please work
-5
+model DOOR {
+	mesh derp {
 
+	}
+	trans herp {
+
+	}
+}

@@ -11,7 +11,7 @@
 	#include <string>
 
 	#include "yabsl_driver.hh"
-	#include "yabsl_parser.hh"
+	#include "yabsl_parser.tab.hh"
 
 
 	// Work around an incompatibility in flex (at least versions
@@ -26,36 +26,30 @@
 
 %}
 
-// Tell Flex that this is not a user environment (eg shell/repl)
+/** Tell Flex that this is not a user environment (eg shell/repl) */
 %option noyywrap nounput noinput
 
-// "Slightly more optimized"
+/** "Slightly more optimized" */
 %option batch
 
-// Print debug messages
+/** Print debug messages */
 %option debug
 
-// C++
+/** C++ */
 %option c++
 
-// Enables the use of start condition stacks
+/** Enables the use of start condition stacks */
 %option stack
 
 
 %{
-	// Code run each time a pattern is matched.
+	/** Code run each time a pattern is matched. */
 	#define YY_USER_ACTION  loc.columns (yyleng);
 %}
 
 
-// Start Conditions. Use %s for inclusive conditions and %x for exclusive ones.
+/** Start Conditions. Use %s for inclusive conditions and %x for exclusive ones. */
 %s COMMENT			/* start condition for comments 	*/
-// The scanner found the tokens "anim/model/mesh"
-%x DEF_ANIM 		/* start condition expecting anim name 	*/
-%x DEF_MODEL 		/* start condition expecting model name	*/
-%x DEF_TRANS 		/* start condition expecting transformation name	*/
-%x DEF_VAR 			/* start condition expecting var name	*/
-%x DEF_MESH			/* start condition expecting mesh name	*/
 // The type of block that the scanner is currently parsing through
 %x MODEL_BLOCK		/* start condition for defining models	*/
 %x MESH_BLOCK		/* start condition for defining meshes	*/
@@ -64,7 +58,7 @@
 %x VAR_BLOCK		/* start condition for defining variables	*/
 
 // Regex Macros
-VARNAME		[A-Za-z_][A-Za-z0-9_]*
+ID			[A-Za-z_][A-Za-z0-9_]*
 SPACE		[ \t]
 WHITESPACE	[ \t\n]
 
@@ -86,26 +80,50 @@ WHITESPACE	[ \t\n]
 /* //////////////////////////////////////////////////////////////////// */
 /* ========================== ERROR CHECKING ========================== */	
 /* //////////////////////////////////////////////////////////////////// */
-/* ============================ VARIABLES ============================= */	
-<DEF_MODEL>{VARNAME}			{
-	yylval.variableVal = atoi(yytext);
+/* ============================= DEFS ================================= */	
+(model)					{
+	yylval.identVal = yytext;
 	#ifdef DEBUG
-	cout << "Creating new model : " << yytext << endl;
+	cout << "Found model identifier " << endl;
 	#endif
 
-	/* Create a new model and put it in the driver */
-
-
+	return MODEL_IDENT;
 }
-<DEF_MESH>{VARNAME}			{
+(mesh)					{
+	yylval.identVal = yytext;
+	#ifdef DEBUG
+	cout << "Found mesh identifier " << endl;
+	#endif
+
+	return MESH_IDENT;
+}
+(trans)					{
+	yylval.identVal = yytext;
+	#ifdef DEBUG
+	cout << "Found transformation identifier " << endl;
+	#endif
+
+	return TRANS_IDENT;
+}
+/* //////////////////////////////////////////////////////////////////// */
+/* ============================ VARIABLES ============================= */	
+<DEF_MODEL>{ID}			{
+	yylval.variableVal = atoi(yytext);
+	#ifdef DEBUG
+	cout << " " << yytext << endl;
+	#endif
+
+	return VARIABLE;
+}
+<DEF_MESH>{ID}			{
 	yylval.variableVal = atoi(yytext);
 	#ifdef DEBUG
 	cout << "Found mesh name : " << yytext << endl;
 	#endif
 
-		
+	return VARIABLE;		
 }
-<DEF_TRANS>{VARNAME}			{
+<DEF_TRANS>{ID}			{
 	yylval.variableVal = atoi(yytext);
 	#ifdef DEBUG
 	cout << "Found trans name : " << yytext << endl;
@@ -113,7 +131,7 @@ WHITESPACE	[ \t\n]
 
 	/* Search for yytext in model's list of meshes */
 
-
+	return VARIABLE;
 }
 /* /////////////////////////////////////////////////////////////////// */
 /* ============================ FLOATS =============================== */	
@@ -136,11 +154,6 @@ WHITESPACE	[ \t\n]
 	return INTEGER
 }
 /* /////////////////////////////////////////////////////////////////// */
-/* ============================= DEFS ================================= */	
-(model|anim|var|transform)	{
-
-}
-/* //////////////////////////////////////////////////////////////////// */
 /* ============================ BRACKETS ============================== */	
 \}							{
 	#ifdef DEBUG

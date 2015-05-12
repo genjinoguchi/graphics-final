@@ -5,7 +5,8 @@ int
 main (int argc, char *argv[])
 {
 	yabsl_driver driver;
-	
+	int res=0;
+
 	int i;
 	for (i=0; i<argc; ++i)
 		if (argv[i] == std::string ("-p"))
@@ -13,7 +14,7 @@ main (int argc, char *argv[])
 		else if (argv[i] == std::string ("-s"))
 			driver.trace_scanning = true;
 		else if (!driver.parse (argv[i]))
-			std::cout << driver.result << std::endl;
+			std::cout << driver.modelName << std::endl;
 		else
 			res = 1;
 	return res;

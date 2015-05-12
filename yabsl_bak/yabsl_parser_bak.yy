@@ -19,8 +19,11 @@
 // Class header;
 %code requires
 {
-	# include <string>
+	#include <string>
+
 	class yabsl_driver;
+	
+	using namespace std;
 }
 
 // The parsing context (no globals here)
@@ -45,6 +48,10 @@
 %code
 {
 	#include "yabsl_driver.hh"
+	/*
+	#include "../gl_src/model.h"
+	#include "../gl_src/mesh.h"
+	*/
 }
 
 
@@ -54,24 +61,21 @@
 %token
 	END  0		"end of file"
 	LBRACKET	"{"
-	RBRACKET	"}"	
+	RBRACKET	"}"
+	MODEL_IDENT	"new-model"
+	MESH_IDENT	"new-mesh"
+	TRANS_IDENT	"new-transform"
 ;
-
+%token <int> INTEGER
+%token <float> FLOAT
+%token <string> IDENTIFIER
+/* ///////////////////////////////////////////////////// */
+/* ======================== TYPES======================= */
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
-%token <std::string> IDENTIFIER "identifier"
-%token <int> NUMBER "number"
-%type  <int> EXPR
 
-/* //////////////////////////////////////////////////////// */
-/* ======================== TYPES========================== */
-%union
-{
-	int			integerVal;
-	float		floatVal;
-	string		variableVal;
-}
 
+/* ///////////////////////////////////////////////////// */
 
 
 
@@ -87,11 +91,20 @@
 
 
 /* ============================ RULES ===================================== */
-%start unit;
 
+program: 
+	   | MODEL BLOCK
 
+MODEL: "new-model" IDENTIFIER
+		{
+			driver.print_debug("Creating new model");
+			driver.modelName = $2;
+		}
 
-
+BLOCK: "{" "}"
+	 	{
+	 	
+		}
 
 
 /* ========================= END SUBROUTINES ============================= */
