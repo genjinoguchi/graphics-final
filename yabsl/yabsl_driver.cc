@@ -42,7 +42,7 @@ void
 yabsl_driver::print_debug (const yy::location& l, const std::string& m)
 {
 	#ifdef DEBUG
-	std::cout << "DEBUG : " << l << m << std::endl;
+	std::cout << "DEBUG : " << l << ": " << m << std::endl;
 	#endif
 }
 

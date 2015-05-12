@@ -49,13 +49,12 @@
 	 * Use %s for inclusive conditions and
 	 * *x for exclusive conditions.
 	 */
-
+%x BLOCK
+%s COMMENT
+%x EXPECT_ARGS
 
 	/* Regex Macros */
 ID			[A-Za-z_][A-Za-z0-9_]*
-SPACE		[ \t]
-WHITESPACE	[ \t\n]
-
 
 
 %%
@@ -70,42 +69,59 @@ WHITESPACE	[ \t\n]
 	/* /////////////////////////////////////////////////// */
 	/* ================ LOCATION TRACKING ================ */	
 [\n]+							{
+	driver.print_debug("Found new line");
 	loc.lines (yyleng);
 	loc.step ();
 }
 	/* /////////////////////////////////////////////////// */
 	/* =================== COMMENTS ====================== */	
-<*>#(.*)						{
-	// Ignore line comments
-	driver.print_debug(loc, "Found line comment");
+"/*"							{
+	driver.print_debug(loc, "Found comment start tag");
+	yy_push_state(COMMENT);
+}
+<COMMENT>"*/"					{
+	yy_pop_state();
+}
+<COMMENT>(("*"[^/])?|[^*])*		;/* Non-greedy regex by Chesley Tan */
+	/* /////////////////////////////////////////////////// */
+	/* ======================== DEFS ===================== */
+"model"							{
+	driver.print_debug (loc, "Found new-model identifier");
+	return yy::yabsl_parser::make_MODEL_IDENT (loc);
+}
+"mesh"							{
+	driver.print_debug (loc, "Found new-mesh identifier");
+	return yy::yabsl_parser::make_MESH_IDENT (loc);
+}
+"transform"						{
+	driver.print_debug (loc, "Found new-transform identifier");
+	return yy::yabsl_parser::make_TRANS_IDENT (loc);
 }
 	/* /////////////////////////////////////////////////// */
-	/* =============== ERROR CHECKING ==================== */	
-	/* /////////////////////////////////////////////////// */
-	/* ======================== DEFS ===================== */	
-	/* /////////////////////////////////////////////////// */
-	/* =================== BRACKETS ====================== */	
-\{								{
-	driver.print_debug(loc, "Found opening bracket");
-	
+	/* =================== BRACKETS ====================== */
+"{"								{
+	driver.print_debug (loc, "Found opening bracket");
+	yy_push_state (BLOCK);
+	return yy::yabsl_parser::make_LBRACKET (loc);
+}
+<BLOCK>"}"						{
+	driver.print_debug (loc, "Found closing bracket");
+	yy_pop_state ();
+	return yy:yabsl_parser::make_RBRACKET (loc);
 }
 	/* /////////////////////////////////////////////////// */
-	/* ====================== FLOATS ===================== */	
+	/* ===================== IDENTIFIERS ================= */
 	/* /////////////////////////////////////////////////// */
-	/* ===================== INTEGERS ==================== */	
+	/* ===================== COMMANDS ==================== */
+<BLOCK>(*)						{
+	/* Command - the first string in the line. */
+	driver.print_debug(loc, "Found command");
+}
 	/* /////////////////////////////////////////////////// */
-	/* ===================== IDENTIFIERS ================= */	
-{ID}							{
-	driver.print_debug(loc, "Found identifier");
-
-	return yy::yabsl_parser::make_IDENTIFIER(yytext, loc);
-								}
+	/* ==================== ERROR CHECKING =============== */
 	/* /////////////////////////////////////////////////// */
 	/* ====================== END OF FILE ================ */
-<<EOF>>							{
-	driver.print_debug (loc, "Found end of file.");
-	return yy::yabsl_parser::make_END (loc);
-}
+<<EOF>>		return yy::yabsl_parser::make_END (loc);
 %%
 	/* =================== END RULES ========================== */
 

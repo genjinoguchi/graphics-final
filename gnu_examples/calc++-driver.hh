@@ -1,19 +1,19 @@
-#ifndef YABSL_DRIVER_HH
-# define YABSL_DRIVER_HH
+#ifndef CALCXX_DRIVER_HH
+# define CALCXX_DRIVER_HH
 # include <string>
 # include <map>
-# include "yabsl-parser.hh"
+# include "calc++-parser.hh"
 // Tell Flex the lexer's prototype ...
 # define YY_DECL \
-  yy::yabsl_parser::symbol_type yylex (yabsl_driver& driver)
+  yy::calcxx_parser::symbol_type yylex (calcxx_driver& driver)
 // ... and declare it for the parser's sake.
 YY_DECL;
 // Conducting the whole scanning and parsing of Calc++.
-class yabsl_driver
+class calcxx_driver
 {
 public:
-  yabsl_driver ();
-  virtual ~yabsl_driver ();
+  calcxx_driver ();
+  virtual ~calcxx_driver ();
 
   std::map<std::string, int> variables;
 

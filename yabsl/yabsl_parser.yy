@@ -66,14 +66,13 @@
 	MESH_IDENT	"new-mesh"
 	TRANS_IDENT	"new-transform"
 ;
-%token <int> INTEGER
-%token <float> FLOAT
-%token <string> IDENTIFIER
+%token <string> IDENTIFIER "id"
+%token <string> COMMAND "cmd"
+%token <string> ARGS "args"
 /* ///////////////////////////////////////////////////// */
 /* ======================== TYPES======================= */
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
-
 
 /* ///////////////////////////////////////////////////// */
 
@@ -92,19 +91,85 @@
 
 /* ============================ RULES ===================================== */
 
-program: 
-	   | MODEL BLOCK
+program : 
+		| MODEL BLOCK
 
-MODEL: "new-model" IDENTIFIER
+MODEL : "new-model" "id"
 		{
 			driver.print_debug("Creating new model");
 			driver.modelName = $2;
-		}
+	  	}
+	  ;
 
-BLOCK: "{" "}"
-	 	{
-	 	
-		}
+MESH : "new-mesh" "id" MESH_BLOCK
+	   {
+	       /* 
+		    * Add the value of MESH_BLOCK
+		    * to a new mesh object.
+			* Then, add it to the "global" model.
+			*/
+	   }
+	 ;
+
+TRANSFORM : "new-transform" "id" TRANS_BLOCK
+		    {
+		 		/* 
+				 * Add the value of TRANS_BLOCK
+				 * to a new transform object.
+				 * Then, add it to the "global" model.
+				 */
+			}
+
+MODEL-BLOCK : "{" model-directives "}"
+			  {
+	 		    /* Add meshes and transforms to the model */
+			  }
+			;
+
+TRANS-BLOCK : "{" transform-directives "}"
+			  {
+			
+			  }
+			;
+
+model-directives : MESH model-directives
+				   {
+					
+				   }
+				 | TRANSFORM model-directives
+				   {
+				   
+				   }
+				 | %empty {}
+				 ;
+
+mesh-directives : directive mesh-directives
+				  {
+				      
+				  }
+				| %empty {}
+				;
+
+transform-directives : directive transform-directives
+					   {
+					       
+					   }
+					 | %empty {}
+					 ;
+
+directive : "cmd" string-list
+		    {
+		  
+			}
+          ;
+
+string-list : "str" "args"
+			  {
+			      
+			  }
+			| %empty {}
+			;
+
 
 
 /* ========================= END SUBROUTINES ============================= */

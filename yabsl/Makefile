@@ -8,7 +8,10 @@ HEADER_FILES=yabsl_parser.hh yabsl_driver.hh \
 all:
 	@bison -o yabsl_parser.cc yabsl_parser.yy
 	@flex -o yabsl_scanner.cc yabsl_scanner.ll
-	@g++  $(CPP_FILES)
+	@g++ $(DEBUG) $(WARNINGS) $(CPP_FILES)
+
+test:
+	./a.out ../tests/test.yabsl
 
 clean:
 	@rm -f location.hh
@@ -17,6 +20,6 @@ clean:
 	@rm -f yabsl_parser.hh
 	@rm -f yabsl_parser.cc
 	@rm -f yabsl_scanner.cc
-	@rm -f a.out
+	@rm -rf a.out*
 
 

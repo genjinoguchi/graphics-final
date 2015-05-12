@@ -14,7 +14,8 @@ main (int argc, char *argv[])
 		else if (argv[i] == std::string ("-s"))
 			driver.trace_scanning = true;
 		else if (!driver.parse (argv[i]))
-			std::cout << driver.modelName << std::endl;
+			//std::cout << driver.modelName << std::endl;
+			std::cout << "Running." << std::endl;
 		else
 			res = 1;
 	return res;
