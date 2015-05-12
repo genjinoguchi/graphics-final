@@ -35,9 +35,6 @@
 	/** Print debug messages */
 %option debug
 
-	/** C++ */
-%option c++
-
 	/** Enables the use of start condition stacks */
 %option stack
 
