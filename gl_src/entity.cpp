@@ -18,6 +18,7 @@ void Entity::setScale(double s) {//sets all of them to s
 	scale[2] = s;
 	scale[3] = 1;
 }
+
 void Entity::setRotation(Vect4 v) { // In rads
 	rotation = v;
 
@@ -27,11 +28,11 @@ void Entity::setRotation(Vect4 v) { // In rads
 	rotmat = Mat4::mult(Mat4::RotateXMat(v[0]), rotmat);
 }
 
-Vect4 Entity::getLocation() { return loc; }
-Vect4 Entity::getScale() { return scale; }
-Vect4 Entity::getRotation() { return rotation; }
+Vect4 Entity::getLocation() const { return loc; }
+Vect4 Entity::getScale() const { return scale; }
+Vect4 Entity::getRotation() const { return rotation; }
 
-Mat4 Entity::forwardMat() {
+Mat4 Entity::forwardMat() const {
 	Mat4 temp;
 
 	//First scale things
@@ -44,7 +45,7 @@ Mat4 Entity::forwardMat() {
 	return temp;
 }
 
-Mat4 Entity::inverseMat() {
+Mat4 Entity::inverseMat() const {
 	Mat4 temp;
 
 	//First translate things
@@ -59,7 +60,7 @@ Mat4 Entity::inverseMat() {
 	return temp;
 }
 
-std::string Entity::to_string() {
+std::string Entity::to_string() const {
 	std::string temp;
 
 	temp.append("loc: ");

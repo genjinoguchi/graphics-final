@@ -15,8 +15,8 @@ Face::Face(int a, int b, int c) {
 	v3 = c;
 }
 
-std::string Face::to_string() {
-	std::string temp;
+string Face::to_string() {
+	string temp;
 
 	temp.append("");
 	temp.append(std::to_string(v1));
@@ -39,18 +39,42 @@ Mesh::Mesh(int deleteonremove)
 Mesh::Mesh(const Mesh& other) :
 	markedForDeath(other.markedForDeath),
 	deleteOnRemove(other.deleteOnRemove),
-	verts(std::vector<Vect4>(other.verts)),
-	faces(std::vector<Face>(other.faces)) {
+	verts(vector<Vect4>(other.verts)),
+	faces(vector<Face>(other.faces)),
+	children(unordered_map<string, Mesh*>(other.children)) {
 
+		//clone all child meshes
+		for(auto it = children.begin(); it != children.end(); it++) {
+			it->second = new Mesh(*(it->second));
+		}
 }
 
 Mesh::~Mesh() {
 	clear();
+	for(auto it = children.begin(); it != children.end(); it++) {
+		delete it->second;
+	}
 }
 
 void Mesh::clear() {
 	verts.clear();
 	faces.clear();
+}
+
+void Mesh::addChild(string name, Mesh *m) {
+	if(children.count(name)) {
+		cerr << "Child mesh already exists with name " << name << "\n";
+		return;
+	}
+	children[name] = m;
+}
+
+Mesh* Mesh::getChild(string name) {
+	if(!children.count(name)) {
+		cerr << "No child mesh exists with name " << name << "\n";
+		return NULL;
+	}
+	return children[name];
 }
 
 int Mesh::addVert(Vect4 v) {
@@ -89,7 +113,7 @@ char *Mesh::myStrtok(char *s, char delim) {
 	}
 }
 
-void Mesh::loadFromObjFile(std::string filename) {
+void Mesh::loadFromObjFile(string filename) {
 	addVert(Vect4(0,0,0));//dummy vert to account for 1-indexing
 
 
@@ -113,11 +137,11 @@ void Mesh::loadFromObjFile(std::string filename) {
 		
 
 		if(!strcmp(buffer, "#")) {
-			std::cerr << "Ignoring comment" << endl;
+			cerr << "Ignoring comment" << endl;
 		} else if(!strcmp(buffer, "o")) {
-			//std::cerr << "ignoring o for now" << endl;
+			//cerr << "ignoring o for now" << endl;
 		} else if(!strcmp(buffer, "v")) {
-			//std::cerr << "handling v" << endl;
+			//cerr << "handling v" << endl;
 			Vect4 v;
 
 			char *temp = next; //points to start of first float
@@ -127,9 +151,9 @@ void Mesh::loadFromObjFile(std::string filename) {
 
 			addVert(v);
 		} else if(!strcmp(buffer, "vt")) {
-			//std::cerr << "ignoring vt for now" << endl;
+			//cerr << "ignoring vt for now" << endl;
 		} else if(!strcmp(buffer, "vn")) {
-			//std::cerr << "ignoring vn for now" << endl;
+			//cerr << "ignoring vn for now" << endl;
 		} else if(!strcmp(buffer, "f")) {
 			Face f;
 
@@ -142,17 +166,17 @@ void Mesh::loadFromObjFile(std::string filename) {
 				;
 			f.v3 = strtol(temp, &temp, 0);
 
-			//std::cerr << f.v1 << ", " << f.v2 << ", " << f.v3 << "\n";
+			//cerr << f.v1 << ", " << f.v2 << ", " << f.v3 << "\n";
 
 			addFace(f);
-			//std::cerr << "Woo! f" << endl;
+			//cerr << "Woo! f" << endl;
 		} else if(!strcmp(buffer, "s")) {
-			std::cerr << "ignored s" << endl;
+			cerr << "ignored s" << endl;
 		} else {
 			//Delay
 			for(int i = 0; i < 100 * 1000 * 1000; i++)
 				;
-			std::cerr << "Unkown start word: '" << buffer << "'" << std::endl;
+			cerr << "Unkown start word: '" << buffer << "'" << endl;
 		}
 	}
 
