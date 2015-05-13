@@ -4,20 +4,20 @@
 
 model DOOR {
 	mesh FRAME { #note, this is now DOOR.FRAME
-		loadfile FRAME.OBJ
-		genprim sphere 
+		loadfile FRAME.OBJ;
+		genprim sphere;
 			#generating primitives may not be necessary, I haven't given it much thought
 			#implement it if you want to but I don't see much use for it
 			#except maybe debugging or whatnot
 	}
 	mesh DOOR_LEFT {
-		loadfile BLAH1.OBJ
-		loadfile BLAH2.OBJ
+		loadfile BLAH1.OBJ;
+		loadfile BLAH2.OBJ;
 		#possible multiple mesh generating commands
 		#not sure if this is necessary
 	}
 	mesh DOOR_RIGHT {
-		loadfile BLAH3.OBJ
+		loadfile BLAH3.OBJ;
 	}
 	mesh DOOR_LEFT.WHIRLIGIG {
 		#note, this should now be a child of DOOR_LEFT
@@ -25,7 +25,7 @@ model DOOR {
 		#like "mesh A { mesh B1 {...} mesh B2 {...} ...}"
 		#or do it this way 
 		
-		loadfile WHIRL.OBJ
+		loadfile WHIRL.OBJ;
 		
 	}
 	mesh BLANK {
@@ -59,25 +59,25 @@ model DOOR {
 
 		#used to set default values for all vars
 		anim CLEAR {
-			set DOOR_SLIDE_LEFT 0
-			set DOOR_SWING_LEFT 0
-			set DOOR_SLIDE_RIGHT 0
-			set DOOR_SWING_RIGHT 0
+			set DOOR_SLIDE_LEFT 0;
+			set DOOR_SWING_LEFT 0;
+			set DOOR_SLIDE_RIGHT 0;
+			set DOOR_SWING_RIGHT 0 ;
 		}
 
 		anim CLOSED {
 			#specifies that this is a static anim
-			duration 0	
+			duration 0;
 
 			#this calls another animation, setting its vars, and returns
-			animate WHIRL_SPIN
-			animate CLEAR
+			animate WHIRL_SPIN;
+			animate CLEAR;
 		}
 
 		anim WHIRL_SPIN {
-			duration 1
-			vary WHIRLIGIG_SPIN { 0, 0; 1,360}
-			next loop
+			duration 1;
+			vary WHIRLIGIG_SPIN { 0, 0; 1,360};
+			next loop;
 		}
 
 	#opened state, not moving
@@ -87,30 +87,30 @@ model DOOR {
 
 		#duration 0
 
-		animate WHIRL_SPIN
-		animate CLEAR
+		animate WHIRL_SPIN;
+		animate CLEAR;
 
-		set DOOR_SLIDE_LEFT -0.5
-		set DOOR_SLIDE_RIGHT 0.5
+		set DOOR_SLIDE_LEFT -0.5;
+		set DOOR_SLIDE_RIGHT 0.5;
 	}
 
 	#swung open state, not moving
 	anim OPEN_ROTATE {
-		animate WHIRL_SPIN
-		animate CLEAR
+		animate WHIRL_SPIN;
+		animate CLEAR;
 
 		#these will probably be left as degrees, then converted to 
 		#radians by the parser because it's easier on us
-		set DOOR_SWING_LEFT 90
-		set DOOR_SWING_RIGHT 90
+		set DOOR_SWING_LEFT 90;
+		set DOOR_SWING_RIGHT 90;
 	}
 	
 	#slides the doors open the
 	anim OPENING_SLIDE {
-		duration 2 #lasts 2 seconds
+		duration 2; #lasts 2 seconds
 
-		animate WHIRL_SPIN
-		animate CLEAR
+		animate WHIRL_SPIN;
+		animate CLEAR;
 	
 		#vary will, create a function out of the provided list of ordered
 		#pairs, and evaluate it at whatever portion of the duration has 
@@ -124,26 +124,26 @@ model DOOR {
 		#list of comma-separated ordered pairs of arbitrary length
 		#spacing optional
 
-		vary DOOR_SLIDE_LEFT { 0,0 ; 0.5, -0.5; 1, -0.5; }
-		vary DOOR_SLIDE_RIGHT { 0,0 ; 0.5, 0.5; 1, 0.5; }
+		vary DOOR_SLIDE_LEFT { 0,0 ; 0.5, -0.5; 1, -0.5; };
+		vary DOOR_SLIDE_RIGHT { 0,0 ; 0.5, 0.5; 1, 0.5; };
 		#we might add more to the varying spec, allowing for things like different curves
 		#(linear, bezier, polynomial, etc) or things like multiplying the whole
 		#thing by a scalar, again, to allow us to modify it without redoing everything
 
 		#when done, set the anim state to OPEN_SLIDE
-		next OPEN_SLIDE
+		next OPEN_SLIDE;
 	}
 
 	anim OPENING_ROTATE {
-		duration 5 #opens slowly, why not
+		duration 5; #opens slowly, why not
 
-		animate WHIRL_SPIN
-		animate_CLEAR
+		animate WHIRL_SPIN;
+		animate_CLEAR;
 
-		vary DOOR_SWING_LEFT { 0,0 ; 0, 60; 1, 90; }
-		vary DOOR_SWING_RIGHT { 0,0 ; 0, -60; 1, -90; }
+		vary DOOR_SWING_LEFT { 0,0 ; 0, 60; 1, 90; };
+		vary DOOR_SWING_RIGHT { 0,0 ; 0, -60; 1, -90; };
 	
-		next OPEN_ROTATE
+		next OPEN_ROTATE;
 	}
 
 
@@ -156,26 +156,26 @@ model DOOR {
 
 	transform DOOR_LEFT {
 		#rotate it about the y axis
-		r 0 DOOR_SWING_LEFT 0
+		r 0 DOOR_SWING_LEFT 0;
 		#slide it in x
-		t DOOR_SLIDE_LEFT 0 0
+		t DOOR_SLIDE_LEFT 0 0;
 	}
 	transform DOOR_RIGHT {
 		#this one's tricky, it's hinge starts at x=0.5
 		#so we shift it to the origin, spin it, then put it back
-		t -0.5 0 0
-		r 0 DOOR_SWING_RIGHT 0
-		t 0.5 0 0
+		t -0.5 0 0;
+		r 0 DOOR_SWING_RIGHT 0;
+		t 0.5 0 0;
 
-		t DOOR_SLIDE_RIGHT 0 0
+		t DOOR_SLIDE_RIGHT 0 0;
 	}
 	transform WHIRLIGIG {
 		#spin it about z axis while it's still at the origin
-		r 0 0 WHIRLIGIG_SPIN
+		r 0 0 WHIRLIGIG_SPIN;
 		#shift it to where you want it to be relative to the door
 		#before any transforms are applied to the door
 		#we want it to be right middle
-		t 0.5, 0.5, 0
+		t 0.5, 0.5, 0;
 
 		#after that it should follow the door by virtue of being awesome
 	}

@@ -1,0 +1,17 @@
+model sample {
+	mesh a { loadfromfile block1.obj; }
+	mesh b { loadfromfile block1.obj; }
+	mesh c { loadfromfile block1.obj; }
+
+	transform a {
+		#do nothing
+	}
+	transform b {
+		r 0 0 0.3 ;
+		t 0 1 0   ;
+	}
+	transform c {
+		r 0 0 -0.3 ;
+		t 0 1 0    ;
+	}
+}
