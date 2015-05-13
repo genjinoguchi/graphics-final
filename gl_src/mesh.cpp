@@ -429,3 +429,9 @@ void Mesh::genPrimTorus(double R, double r) {
 		}
 	}
 }
+
+void Mesh::doCommand(vector<string> c) {
+	if(!c[0].compare("loadfile")) {
+		loadFromObjFile(c[1]);
+	}
+}

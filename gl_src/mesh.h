@@ -68,6 +68,10 @@ public:
 	void genPrimSphere(double r);
 	void genPrimTorus(double R, double r);
 
+	//Interprets commands from yabsl file
+	//for now just 'loadfile "foo.bar"'
+	void doCommand(vector<string> c);
+
 
 private:
 	char *myStrtok(char *s, char delim);
