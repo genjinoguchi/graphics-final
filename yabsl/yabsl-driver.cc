@@ -4,8 +4,7 @@
 yabsl_driver::yabsl_driver ()
   : trace_scanning (false), trace_parsing (false)
 {
-  variables["one"] = 1;
-  variables["two"] = 2;
+
 }
 
 yabsl_driver::~yabsl_driver ()

@@ -51,12 +51,11 @@
 %code
 {
 	#include "yabsl-driver.hh"
-	// #include "../gl_src/model.h"
 }
 
 /* ========================= TOKENS ========================= */	
 %define api.token.prefix {TOK_}
-%token					END					"end of file"
+%token					END	0				"end of file"
 %token					LBRACKET			"{"
 %token					RBRACKET 			"}"
 %token					MODEL_IDENT 		"new-model"
@@ -67,17 +66,18 @@
 /* ======================== TYPES======================= */
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
-/*
-%type 	<std::string>							MODEL_BLOCK
-%type 	<std::string>							TRANSFORM
-%type 	<std::vector<std::vector<string> > >	TRANS_BLOCK
-%type 	<std::vector<std::vector<string> > >	transform-directives 
-%type 	<std::string> 							MESH
-%type 	<std::vector<std::vector<string> > > 	MESH_BLOCK
-%type 	<std::vector<std::vector<string> > >	mesh-directives
-%type 	<std::vector<string> >					directive
-%type 	<std::vector<string> >					args
-*/
+
+%type 	<std::string>								MODEL_BLOCK
+%type 	<std::string>								TRANSFORM
+%type 	<std::vector<std::vector<std::string> > >	TRANS_BLOCK
+%type 	<std::vector<std::vector<std::string> > >	transform-directives 
+%type 	<std::string> 								MESH
+%type 	<std::vector<std::vector<std::string> > > 	MESH_BLOCK
+%type 	<std::vector<std::vector<std::string> > >	mesh-directives
+%type 	<std::vector<std::string> >					directive
+%type 	<std::vector<std::string> >					args
+
+%type 	<std::string> 								unit
 /* ///////////////////////////////////////////////////// */
 
 %printer { yyoutput << $$; } <*>;
@@ -86,28 +86,34 @@
 
 %%
 
-%start unit;
 
-unit : %empty {};
 
 /* ============================ RULES ===================================== */
-/*
 
 %start unit;
 
-unit : MODEL MODEL_BLOCK
+unit : "new-mesh"
 		  {
-
+		      $$ = "Model successfully parsed.";
 		  }
 		| %empty {}
 		;
 
+
 MODEL : "new-model" "id"
 		{
-			driver.print_debug("Creating new model");
+			driver.print_debug ("Creating new model");
 			driver.modelName = $2;
 	  	}
 	  ;
+
+MODEL_BLOCK : "{" "id" "}"
+			  {
+			      driver.print_debug (std::string("Test identifier") + $2);
+			  }
+			;
+
+/*
 
 MESH : "new-mesh" "id" MESH_BLOCK
 	   {
@@ -116,7 +122,7 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
 			*
-			driver.model.addMesh($2);
+			//driver.model.addMesh($2);
 			//driver.model.getTransform($3)->command($3);
 	   }
 	 ;
@@ -128,33 +134,54 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
 				 *
-				driver.model.addTransform($2);
+				//driver.model.addTransform($2);
 				//driver.model.getTransform($2)->command($3);
 			}
 		  ;
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
-	 		    /* Add meshes and transforms to the model *
 				
 			  }
 			;
 
 TRANS_BLOCK : "{" transform-directives "}"
 			  {
-			
+			      $$ = $2;
+				  /*
+				  #ifdef DEBUG
+				  int i,j;
+				  for (i=0; i<$2.size(); i++) {
+					  for (j=0; j<$2[i].size(); j++) {
+					      std::cout << $2[i][j] << " ";
+					  }
+                      std::cout << std::endl;
+				  }
+				  #endif
+				  *
 			  }
 			;
 
 MESH_BLOCK : "{" mesh-directives "}"
 			  {
-			
+			      $$ = $2;
+				  /*
+				  #ifdef DEBUG
+				  int i,j;
+				  for (i=0; i<$2.size(); i++) {
+					  for (j=0; j<$2[i].size(); j++) {
+					      std::cout << $2[i][j] << " ";
+					  }
+                      std::cout << std::endl;
+				  }
+				  #endif
+				  *
 			  }
 			;
 
 model-directives : MESH model-directives
 				   {
-					
+				   
 				   }
 				 | TRANSFORM model-directives
 				   {
@@ -193,7 +220,6 @@ args : args "id"
 	 | %empty {}
 	 ;
 */
-
 
 /* ========================= END SUBROUTINES ============================= */
 

@@ -10,10 +10,15 @@ all:
 	flex -o yabsl-scanner.cc yabsl-scanner.ll
 	g++ $(DEBUG) $(CPP_FILES)
 	make clean
+	make test
+
+test:
+	./a.out ../tests/test.yabsl
 
 clean:
 	rm -f yabsl-scanner.cc yabsl-parser.cc yabsl-parser.hh
 	rm -f position.hh location.hh stack.hh
 
 superclean:
+	make clean
 	rm -rf a.out*
