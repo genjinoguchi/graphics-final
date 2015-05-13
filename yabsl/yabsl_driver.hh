@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "yabsl-parser.hh"
+#include "yabsl_parser.hh"
 
 
 /*
@@ -30,11 +30,9 @@ class yabsl_driver
 	public:
 		yabsl_driver ();
 		virtual ~yabsl_driver ();
-		
-		std::map<std::string, int> variables;
 
-
-
+		// Model Name
+		string modelName;
 
 		// Scanning Phase ////////////////////////
 		
@@ -43,6 +41,7 @@ class yabsl_driver
 		/*
 		 * Indicate whether scan traces
 		 * will be generated.
+		 */
 		bool trace_scanning;
 
 
@@ -69,11 +68,15 @@ class yabsl_driver
 
 
 
-		// Error Handling ///////////////////////
-		
+		// Error Handling ///////////////////////	
 		void error (const yy::location& l, const std::string& m);
 		void error (const std::string& m);
 
+
+
+		// Error Handling ///////////////////////	
+		void print_debug (const yy::location& l, const std::string& m);
+		void print_debug (const std::string& m);
 
 
 	private:
