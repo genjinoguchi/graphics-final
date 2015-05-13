@@ -22,6 +22,8 @@
 	#undef yywrap
 	#define yywrap() 1
 
+	#define yyterminate() return token::END
+
 	// Manage the location of the token
 	static yy::location loc;
 
@@ -70,13 +72,13 @@ WHITESPACE  [ \t\r]+
 %}
 	/* /////////////////////////////////////////////////// */
 	/* ====================== SPACES ===================== */
-[ \t\r]							{
+[ \t\r]+						{
 	/* get rid of whitespace */
 	loc.step();
 }
 	/* /////////////////////////////////////////////////// */
 	/* ================ LOCATION TRACKING ================ */	
-[\n]+							{
+<*>[\n]+							{
 	driver.print_debug("Found new line");
 	loc.lines (yyleng);
 	loc.step ();
@@ -84,11 +86,12 @@ WHITESPACE  [ \t\r]+
 	/* /////////////////////////////////////////////////// */
 	/* =================== COMMENTS ====================== */	
 "/*"							{
-	driver.print_debug(loc, "Found comment start tag");
-	yy_push_state(COMMENT);
+	driver.print_debug (loc, "Found comment start tag");
+	yy_push_state (COMMENT);
 }
 <COMMENT>"*/"					{
-	yy_pop_state();
+	driver.print_debug (loc, "Comment block ended.");
+	yy_pop_state ();
 }
 <COMMENT>(("*"[^/])?|[^*])*		;/* Non-greedy regex by Chesley Tan */
 	/* /////////////////////////////////////////////////// */
@@ -107,12 +110,12 @@ WHITESPACE  [ \t\r]+
 }
 	/* /////////////////////////////////////////////////// */
 	/* =================== BRACKETS ====================== */
-"\{"{WHITESPACE}					{
-	driver.print_debug (loc, "Found opening bracket");
+\{								{
+	driver.print_debug (loc, std::string("Found opening bracket : `") + yytext + std::string("`") );
 	yy_push_state (BLOCK);
 	return yy::yabsl_parser::make_LBRACKET (loc);
 }
-<BLOCK>"}"						{
+<BLOCK>\}						{
 	driver.print_debug (loc, "Found closing bracket");
 	yy_pop_state ();
 	return yy::yabsl_parser::make_RBRACKET (loc);
