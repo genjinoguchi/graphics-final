@@ -34,7 +34,6 @@ class yabsl_driver
 
 		// Model
 		string modelName;
-		// Model model;
 
 
 		// Scanning Phase ////////////////////////

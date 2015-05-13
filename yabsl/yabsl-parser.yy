@@ -51,6 +51,7 @@
 %code
 {
 	#include "yabsl-driver.hh"
+	//#include "../model.h"
 }
 
 /* ========================= TOKENS ========================= */	
@@ -61,12 +62,13 @@
 %token					MODEL_IDENT 		"new-model"
 %token					MESH_IDENT 			"new-mesh"
 %token					TRANS_IDENT 		"new-transform"
+%token 					NEW_LINE			"\n"
 %token 	<std::string>	IDENTIFIER 			"id"
+%token 					SEMICOLON			";"
 /* ///////////////////////////////////////////////////// */
 /* ======================== TYPES======================= */
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
-
 %type 	<std::string>								MODEL_BLOCK
 %type 	<std::string>								TRANSFORM
 %type 	<std::vector<std::vector<std::string> > >	TRANS_BLOCK
@@ -76,11 +78,32 @@
 %type 	<std::vector<std::vector<std::string> > >	mesh-directives
 %type 	<std::vector<std::string> >					directive
 %type 	<std::vector<std::string> >					args
-
-%type 	<std::string> 								unit
+%type 	<std::string>								unit
+// No %destructor is needed to enable memory deallocation
+// during error recovery; the memory, for strings for instance,
+// will be reclaimed by the regular destructors.
+/* ///////////////////////////////////////////////////// */
+/* ======================= PRINTERS ==================== */
+%printer 	{ yyoutput << $$; } 	MODEL_BLOCK TRANSFORM MESH unit
+%printer 	{ yyoutput << $$; } 	IDENTIFIER
+%printer 	{ 	
+				/*
+				std::string output;
+				output = "COMMAND LIST: \n";
+			    for (int i=0; i<$$.size(); i++) {
+					std::cout << "aijwefoijawef" << $$.size() << std::endl;
+					for (int j=0; j<$$[i].size(); j++) {
+						output += $$[i][j] + std::string(" ");
+					}
+					output += std::string("\n");
+				}
+				yyoutput << output;
+				*/
+				yyoutput << "Good afternoon.";
+			} TRANS_BLOCK MESH_BLOCK transform-directives mesh-directives directive args
 /* ///////////////////////////////////////////////////// */
 
-%printer { yyoutput << $$; } <*>;
+
 
 
 
@@ -92,28 +115,19 @@
 
 %start unit;
 
-unit : "new-mesh"
+unit : MODEL MODEL_BLOCK
 		  {
 		      $$ = "Model successfully parsed.";
 		  }
 		| %empty {}
 		;
 
-
 MODEL : "new-model" "id"
 		{
-			driver.print_debug ("Creating new model");
 			driver.modelName = $2;
+			driver.print_debug (std::string("Creating new model: ") + driver.modelName);	
 	  	}
 	  ;
-
-MODEL_BLOCK : "{" "id" "}"
-			  {
-			      driver.print_debug (std::string("Test identifier") + $2);
-			  }
-			;
-
-/*
 
 MESH : "new-mesh" "id" MESH_BLOCK
 	   {
@@ -121,9 +135,8 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * Add the value of MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
-			*
+			*/
 			//driver.model.addMesh($2);
-			//driver.model.getTransform($3)->command($3);
 	   }
 	 ;
 
@@ -133,7 +146,7 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 				 * Add the value of TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
-				 *
+				 */
 				//driver.model.addTransform($2);
 				//driver.model.getTransform($2)->command($3);
 			}
@@ -141,7 +154,7 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
-				
+			      /* Placeholder for recursion */ 
 			  }
 			;
 
@@ -158,36 +171,28 @@ TRANS_BLOCK : "{" transform-directives "}"
                       std::cout << std::endl;
 				  }
 				  #endif
-				  *
+				  */
 			  }
 			;
 
 MESH_BLOCK : "{" mesh-directives "}"
 			  {
 			      $$ = $2;
-				  /*
-				  #ifdef DEBUG
-				  int i,j;
-				  for (i=0; i<$2.size(); i++) {
-					  for (j=0; j<$2[i].size(); j++) {
-					      std::cout << $2[i][j] << " ";
-					  }
-                      std::cout << std::endl;
-				  }
-				  #endif
-				  *
 			  }
 			;
 
 model-directives : MESH model-directives
 				   {
-				   
+				       /* placeholder for recursion */
 				   }
 				 | TRANSFORM model-directives
 				   {
-				   
+				       /* placeholder for recursion */
 				   }
-				 | %empty {}
+				 | %empty
+				   {
+
+				   }
 				 ;
 
 mesh-directives : mesh-directives directive
@@ -195,7 +200,12 @@ mesh-directives : mesh-directives directive
 				      $1.push_back ($2);
 					  $$ = $1;
 				  }
-				| %empty {}
+				| %empty
+					 {
+		   			     std::vector<std::vector<string> > tmp;
+		   			     $$ = tmp;
+		   			     std::vector<std::vector<string> > ().swap(tmp);
+					 }
 				;
 
 transform-directives : transform-directives directive
@@ -203,10 +213,18 @@ transform-directives : transform-directives directive
 					       $1.push_back ($2);
 						   $$ = $1;
 					   }
-					 | %empty {}
+					 | %empty
+					   {
+		   			       std::vector<std::vector<string> > tmp;
+		   				   $$ = tmp;
+		   				   std::vector<std::vector<string> > ().swap(tmp);
+
+					   }
 					 ;
 
-directive : args "\n"
+
+
+directive : args ";"
 		    {
 		    	 $$ = $1;
 			}
@@ -214,12 +232,17 @@ directive : args "\n"
 
 args : args "id"
 	   {
-	       $1.push_back ($2);
+		   $1.push_back ($2);
 		   $$ = $1;
 	   }
-	 | %empty {}
+	 | %empty 
+	   {
+	       std::vector<std::string> tmp;
+		   $$ = tmp;
+		   std::vector<std::string> ().swap(tmp);
+	   }
 	 ;
-*/
+
 
 /* ========================= END SUBROUTINES ============================= */
 

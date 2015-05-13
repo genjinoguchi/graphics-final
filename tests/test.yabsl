@@ -1,0 +1,21 @@
+model DOOR {
+	mesh FRAME {
+		loadfile HURR.OBJ;
+		genprim SPHERE;
+	}
+	
+	mesh DOOR_LEFT {
+		loadfile BLAH1.OBJ;
+		loadfile BLAH2.OBJ;
+	}
+	
+	transform FRAME {}
+
+	transform DOOR_LEFT {
+		/* rotate it about the y axis */
+		r 0 DOOR_SWING_LEFT 0;
+		/* slide it in x */
+		t DOOR_SLIDE_LEFT 0 0;
+	}
+	/* commeeeeeeeeeeeeeeeents */	
+}

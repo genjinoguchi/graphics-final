@@ -12,9 +12,10 @@ main (int argc, char *argv[])
 			driver.trace_parsing = true;
 		else if (argv[i] == std::string ("-s"))
 			driver.trace_scanning = true;
-		else if (!driver.parse (argv[i]))
-			std::cout << "Good morning" << std::endl;
-		else
+		else if (!driver.parse (argv[i])) {
+			std::cout << "Finished parsing model \"";
+			std::cout << driver.modelName << "\"" << std::endl;
+		} else
 			res = 1;
 	return res;
 }

@@ -57,7 +57,7 @@
 %x EXPECT_ARGS
 
 	/* Regex Macros */
-ID			[A-Za-z_][A-Za-z0-9_]*
+ID			[A-Za-z0-9_\.]+
 WHITESPACE  [ \t\r]+
 
 
@@ -72,20 +72,20 @@ WHITESPACE  [ \t\r]+
 %}
 	/* /////////////////////////////////////////////////// */
 	/* ====================== SPACES ===================== */
-[ \t\r]+						{
+<*>[ \t\r]+						{
 	/* get rid of whitespace */
 	loc.step();
 }
 	/* /////////////////////////////////////////////////// */
 	/* ================ LOCATION TRACKING ================ */	
-<*>[\n]+							{
-	driver.print_debug("Found new line");
+<*>[\n]							{
+	driver.print_debug (loc, "Found new line");
 	loc.lines (yyleng);
 	loc.step ();
 }
 	/* /////////////////////////////////////////////////// */
 	/* =================== COMMENTS ====================== */	
-"/*"							{
+<*>"/*"							{
 	driver.print_debug (loc, "Found comment start tag");
 	yy_push_state (COMMENT);
 }
@@ -100,18 +100,18 @@ WHITESPACE  [ \t\r]+
 	driver.print_debug (loc, "Found new-model identifier");
 	return yy::yabsl_parser::make_MODEL_IDENT (loc);
 }
-"mesh"							{
+<BLOCK>"mesh"							{
 	driver.print_debug (loc, "Found new-mesh identifier");
 	return yy::yabsl_parser::make_MESH_IDENT (loc);
 }
-"transform"						{
+<BLOCK>"transform"						{
 	driver.print_debug (loc, "Found new-transform identifier");
 	return yy::yabsl_parser::make_TRANS_IDENT (loc);
 }
 	/* /////////////////////////////////////////////////// */
 	/* =================== BRACKETS ====================== */
-\{								{
-	driver.print_debug (loc, std::string("Found opening bracket : `") + yytext + std::string("`") );
+<INITIAL,BLOCK>\{								{
+	driver.print_debug (loc, "Found opening bracket");
 	yy_push_state (BLOCK);
 	return yy::yabsl_parser::make_LBRACKET (loc);
 }
@@ -122,19 +122,27 @@ WHITESPACE  [ \t\r]+
 }
 	/* /////////////////////////////////////////////////// */
 	/* ===================== IDENTIFIERS ================= */
-{ID}							{
-	driver.print_debug (loc, std::string("Found identifier: ") + yytext);
+<INITIAL,BLOCK>{ID}				{
+	driver.print_debug (loc, std::string ("Found identifier: ") + yytext);
 
 	return yy::yabsl_parser::make_IDENTIFIER (yytext, loc);
 }
 	/* /////////////////////////////////////////////////// */
+	/* ===================== SEMICOLONS ================== */
+<BLOCK>";"							{
+	driver.print_debug (loc, "Found semicolon");
+	return yy::yabsl_parser::make_SEMICOLON (loc);
+}
+	/* /////////////////////////////////////////////////// */
 	/* ==================== ERROR CHECKING =============== */
 .								{
+	driver.print_debug (loc, std::string ("Found catchall") + yytext);
 	driver.error (loc, std::string("invalid character: ") + yytext);
 }
 	/* /////////////////////////////////////////////////// */
 	/* ====================== END OF FILE ================ */
 <<EOF>>							{
+	driver.print_debug ("Reached end of file");	
 	return yy::yabsl_parser::make_END (loc);
 }
 	/* /////////////////////////////////////////////////// */
