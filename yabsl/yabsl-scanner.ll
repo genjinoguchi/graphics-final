@@ -1,3 +1,4 @@
+
 	/* YABSL LEXER */ 
 
 
@@ -10,8 +11,8 @@
 	#include <cstdlib>
 	#include <string>
 
-	#include "yabsl_driver.hh"
-	#include "yabsl_parser.hh"
+	#include "yabsl-driver.hh"
+	#include "yabsl-parser.hh"
 
 
 	// Work around an incompatibility in flex (at least versions
@@ -55,17 +56,24 @@
 
 	/* Regex Macros */
 ID			[A-Za-z_][A-Za-z0-9_]*
+WHITESPACE  [ \t\r]+
+
+
 
 
 %%
-
-
 
 	/* ======================= RULES ================================= */
 %{
 	/** Code run each time yylex is called. */
 	loc.step ();
 %}
+	/* /////////////////////////////////////////////////// */
+	/* ====================== SPACES ===================== */
+[ \t\r]							{
+	/* get rid of whitespace */
+	loc.step();
+}
 	/* /////////////////////////////////////////////////// */
 	/* ================ LOCATION TRACKING ================ */	
 [\n]+							{
@@ -99,7 +107,7 @@ ID			[A-Za-z_][A-Za-z0-9_]*
 }
 	/* /////////////////////////////////////////////////// */
 	/* =================== BRACKETS ====================== */
-"{"								{
+"\{"{WHITESPACE}					{
 	driver.print_debug (loc, "Found opening bracket");
 	yy_push_state (BLOCK);
 	return yy::yabsl_parser::make_LBRACKET (loc);
@@ -107,27 +115,31 @@ ID			[A-Za-z_][A-Za-z0-9_]*
 <BLOCK>"}"						{
 	driver.print_debug (loc, "Found closing bracket");
 	yy_pop_state ();
-	return yy:yabsl_parser::make_RBRACKET (loc);
+	return yy::yabsl_parser::make_RBRACKET (loc);
 }
 	/* /////////////////////////////////////////////////// */
 	/* ===================== IDENTIFIERS ================= */
-	/* /////////////////////////////////////////////////// */
-	/* ===================== COMMANDS ==================== */
-<BLOCK>(*)						{
-	/* Command - the first string in the line. */
-	driver.print_debug(loc, "Found command");
+{ID}							{
+	driver.print_debug (loc, std::string("Found identifier: ") + yytext);
+
+	return yy::yabsl_parser::make_IDENTIFIER (yytext, loc);
 }
 	/* /////////////////////////////////////////////////// */
 	/* ==================== ERROR CHECKING =============== */
+.								{
+	driver.error (loc, std::string("invalid character: ") + yytext);
+}
 	/* /////////////////////////////////////////////////// */
 	/* ====================== END OF FILE ================ */
-<<EOF>>		return yy::yabsl_parser::make_END (loc);
-%%
+<<EOF>>							{
+	return yy::yabsl_parser::make_END (loc);
+}
+	/* /////////////////////////////////////////////////// */
+
+
 	/* =================== END RULES ========================== */
 
-
-
-
+%%
 
 void
 yabsl_driver::scan_begin ()
@@ -142,10 +154,16 @@ yabsl_driver::scan_begin ()
     }
 }
 
+
+
 void
 yabsl_driver::scan_end ()
 {
   fclose (yyin);
 }
+
+
+
+
 
 

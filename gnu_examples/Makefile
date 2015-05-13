@@ -6,5 +6,4 @@ all:
 clean:
 	rm -f calc++-scanner.cc calc++-parser.cc calc++-parser.hh
 	rm -f position.hh location.hh stack.hh
-	rm -f a.out
 	rm -rf a.out*

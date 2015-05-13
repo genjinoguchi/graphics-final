@@ -20,6 +20,9 @@
 %code requires
 {
 	#include <string>
+	#include <sstream>
+	#include <vector>
+	#include <map>
 
 	class yabsl_driver;
 	
@@ -47,52 +50,57 @@
 // Code outputted into yabsl_parser.cc
 %code
 {
-	#include "yabsl_driver.hh"
-	/*
-	#include "../gl_src/model.h"
-	#include "../gl_src/mesh.h"
-	*/
+	#include "yabsl-driver.hh"
+	// #include "../gl_src/model.h"
 }
 
-
 /* ========================= TOKENS ========================= */	
-// User friendly names for tokens
 %define api.token.prefix {TOK_}
-%token
-	END  0		"end of file"
-	LBRACKET	"{"
-	RBRACKET	"}"
-	MODEL_IDENT	"new-model"
-	MESH_IDENT	"new-mesh"
-	TRANS_IDENT	"new-transform"
-;
-%token <string> IDENTIFIER "id"
-%token <string> COMMAND "cmd"
-%token <string> ARGS "args"
+%token					END					"end of file"
+%token					LBRACKET			"{"
+%token					RBRACKET 			"}"
+%token					MODEL_IDENT 		"new-model"
+%token					MESH_IDENT 			"new-mesh"
+%token					TRANS_IDENT 		"new-transform"
+%token 	<std::string>	IDENTIFIER 			"id"
 /* ///////////////////////////////////////////////////// */
 /* ======================== TYPES======================= */
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
-
+/*
+%type 	<std::string>							MODEL_BLOCK
+%type 	<std::string>							TRANSFORM
+%type 	<std::vector<std::vector<string> > >	TRANS_BLOCK
+%type 	<std::vector<std::vector<string> > >	transform-directives 
+%type 	<std::string> 							MESH
+%type 	<std::vector<std::vector<string> > > 	MESH_BLOCK
+%type 	<std::vector<std::vector<string> > >	mesh-directives
+%type 	<std::vector<string> >					directive
+%type 	<std::vector<string> >					args
+*/
 /* ///////////////////////////////////////////////////// */
 
+%printer { yyoutput << $$; } <*>;
 
-
-
-// For printing values
-//%printer { yyoutput << $$; } <*>;
-
-
-/* ========================= END DEFINITIONS ============================== */
 
 
 %%
 
+%start unit;
+
+unit : %empty {};
 
 /* ============================ RULES ===================================== */
+/*
 
-program : 
-		| MODEL BLOCK
+%start unit;
+
+unit : MODEL MODEL_BLOCK
+		  {
+
+		  }
+		| %empty {}
+		;
 
 MODEL : "new-model" "id"
 		{
@@ -107,7 +115,9 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * Add the value of MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
-			*/
+			*
+			driver.model.addMesh($2);
+			//driver.model.getTransform($3)->command($3);
 	   }
 	 ;
 
@@ -116,17 +126,27 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 		 		/* 
 				 * Add the value of TRANS_BLOCK
 				 * to a new transform object.
-				 * Then, add it to the "global" model.
-				 */
+				 * Create the new transform, and then push commands to it.
+				 *
+				driver.model.addTransform($2);
+				//driver.model.getTransform($2)->command($3);
 			}
+		  ;
 
-MODEL-BLOCK : "{" model-directives "}"
+MODEL_BLOCK : "{" model-directives "}"
 			  {
-	 		    /* Add meshes and transforms to the model */
+	 		    /* Add meshes and transforms to the model *
+				
 			  }
 			;
 
-TRANS-BLOCK : "{" transform-directives "}"
+TRANS_BLOCK : "{" transform-directives "}"
+			  {
+			
+			  }
+			;
+
+MESH_BLOCK : "{" mesh-directives "}"
 			  {
 			
 			  }
@@ -143,33 +163,36 @@ model-directives : MESH model-directives
 				 | %empty {}
 				 ;
 
-mesh-directives : directive mesh-directives
+mesh-directives : mesh-directives directive
 				  {
-				      
+				      $1.push_back ($2);
+					  $$ = $1;
 				  }
 				| %empty {}
 				;
 
-transform-directives : directive transform-directives
+transform-directives : transform-directives directive
 					   {
-					       
+					       $1.push_back ($2);
+						   $$ = $1;
 					   }
 					 | %empty {}
 					 ;
 
-directive : "cmd" string-list
+directive : args "\n"
 		    {
-		  
+		    	 $$ = $1;
 			}
           ;
 
-string-list : "str" "args"
-			  {
-			      
-			  }
-			| %empty {}
-			;
-
+args : args "id"
+	   {
+	       $1.push_back ($2);
+		   $$ = $1;
+	   }
+	 | %empty {}
+	 ;
+*/
 
 
 /* ========================= END SUBROUTINES ============================= */
@@ -178,10 +201,9 @@ string-list : "str" "args"
 %%
 
 
-
 void
 yy::yabsl_parser::error (const location_type& l,
-  const std::string& m)
+                          const std::string& m)
 {
   driver.error (l, m);
 }
