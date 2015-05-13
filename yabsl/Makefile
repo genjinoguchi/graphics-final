@@ -1,9 +1,19 @@
+DEBUG=-DDEBUG -g
+WARNING_ALL=-Wall
+WARNINGS=$(WARNINGS_QUIET)
+CPP_FILES=yabsl-scanner.cc yabsl-driver.cc main.cc yabsl-parser.cc
+HEADER_FILES=yabsl-parser.hh yabsl-driver.hh \
+			 location.hh stack.hh position.hh
+
 all:
 	bison -d -o yabsl-parser.cc yabsl-parser.yy
 	flex -o yabsl-scanner.cc yabsl-scanner.ll
-	g++ -DDEBUG -g main.cc yabsl-driver.cc yabsl-scanner.cc yabsl-parser.cc
+	g++ $(DEBUG) $(CPP_FILES)
+	make clean
 
 clean:
 	rm -f yabsl-scanner.cc yabsl-parser.cc yabsl-parser.hh
 	rm -f position.hh location.hh stack.hh
+
+superclean:
 	rm -rf a.out*
