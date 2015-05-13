@@ -4,10 +4,16 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <unordered_map>
 
 #include "matrix.h"
 #include "entity.h"
 #include "util.h"
+
+using std::string;
+using std::vector;
+using std::unordered_map;
 
 class Face {
 public:
@@ -16,13 +22,14 @@ public:
 	Face();
 	Face(int a, int b, int c);
 
-	std::string to_string();
+	string to_string();
 };
 
 class Mesh: public Entity {
 public:
-	std::vector<Vect4> verts;
-	std::vector<Face> faces;
+	vector<Vect4> verts;
+	vector<Face> faces;
+	unordered_map<string, Mesh *> children;
 
 	//If true, the world this is part of will delete it when it garbage-collects
 	int markedForDeath = FALSE;
@@ -36,11 +43,15 @@ public:
 
 	void clear(); //makes it blank again (verts/faces)
 
+	//These child meshes will be deleted with the parent
+	void addChild(string name, Mesh *m);
+	Mesh* getChild(string name);
+
 	//Returns the index of the new vertex
 	int addVert(Vect4 v);
 	void addFace(Face f); 
 
-	void loadFromObjFile(std::string filename);
+	void loadFromObjFile(string filename);
 
 	void applyTransform(Mat4 m); //Doesn't modify the verts, only transVerts
 
@@ -56,6 +67,8 @@ public:
 	void genPrimBox(double lx, double ly, double lz);
 	void genPrimSphere(double r);
 	void genPrimTorus(double R, double r);
+
+
 private:
 	char *myStrtok(char *s, char delim);
 };

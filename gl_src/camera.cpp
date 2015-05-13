@@ -8,16 +8,15 @@ Camera::Camera(double fov)
 	this->fov = fov;
 }
 
-void Camera::renderMesh(Mesh *m, Surface *s) {
+void Camera::renderMeshSingle(const Mesh *m, Mat4 t, Surface *s) {
 	Graphics g (s);
 	Vect4 *transVerts = new Vect4[m->verts.size()]; //Temporary storage for transformed vertices
-	Mat4 temp = Mat4::IdentityMat();
-	double sf = 1;
+	Mat4 temp (t);
+	//double sf = 1;
 
 	Vect4 tempLighting = Vect4::unit(Vect4(1, 1, 2));
 	int *lightVals = new int[m->faces.size()];
 
-	temp = m->forwardMat();
 	//Temporary shift!!
 	temp = Mat4::mult(Mat4::TranslateMat(Vect4(0,0,-15)), temp);
 	temp = Mat4::mult(Mat4::ProjectPersp(), temp);
@@ -106,8 +105,24 @@ void Camera::renderMesh(Mesh *m, Surface *s) {
 	delete lightVals;
 }
 
-void Camera::renderMeshes(World *w, Surface *s) {
-	for(int i = 0; i < w->meshes.size(); i++) {
+void Camera::renderMeshOffset(const Mesh *m, Mat4 offset, Surface *s) {
+	offset = Mat4::mult(offset, m->forwardMat());
+	//Render itself
+	renderMeshSingle(m, offset, s);
+
+
+	//Render Children
+	for(auto it = m->children.cbegin(); it != m->children.cend(); it++) {
+		renderMeshOffset(it->second, offset, s);
+	}
+}
+
+void Camera::renderMesh(const Mesh *m, Surface *s) {
+	renderMeshOffset(m, Mat4::IdentityMat(), s);
+}
+
+void Camera::renderMeshes(const World *w, Surface *s) {
+	for(int i = 0; (size_t)i < w->meshes.size(); i++) {
 		//Skip nulls
 		if(!w->meshes[i])
 			continue;
@@ -115,6 +130,24 @@ void Camera::renderMeshes(World *w, Surface *s) {
 		renderMesh(w->meshes[i], s);
 	}
 }
+
+void Camera::renderModel(ModelInstance *m, Surface *s) {
+	m->prepareTransforms();
+
+	Model *mclass = m->getModel();
+	//Doesn't support nested children
+	for(auto it = mclass->children.cbegin(); it != mclass->children.cend(); it++) {
+		renderMeshSingle(it->second, m->transforms[it->first], s);
+	}
+}
+
+/*
+void Camera::renderSubModel(ModelInstance *m, string parent, Mat4 offset, Surface *s) {
+	Mat4 temp = Mat4::mult(offset, m->transforms[parent]);
+
+	//Render Children
+}
+*/
 
 bool Camera::isBackface(Vect4 v1, Vect4 v2, Vect4 v3) {
 	return Vect4::crossZ(v2 - v1, v3 - v1) <= 0;

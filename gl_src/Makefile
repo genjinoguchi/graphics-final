@@ -42,7 +42,7 @@ matrix.o: matrix.cpp matrix.h util.h
 util.o: util.cpp util.h
 	g++ util.cpp $(CXX_FLAGS)
 
-ui_sdl.o: ui_sdl.cpp ui.h drawing.h util.h widgets.h
+ui_sdl.o: ui_sdl.cpp ui.h drawing.h util.h widgets.h mesh.h
 	g++ ui_sdl.cpp $(CXX_FLAGS)
 
 entity.o: entity.cpp entity.h matrix.h util.h

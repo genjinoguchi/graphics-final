@@ -21,14 +21,14 @@ class Entity {
 		void setScale(double s);//sets all of them to s
 		void setRotation(Vect4 v); //goes around z, y, then x (in rads)
 
-		Vect4 getLocation();
-		Vect4 getScale();
-		Vect4 getRotation(); //returns a vect4 containing the x, y, and z rots
+		Vect4 getLocation() const;
+		Vect4 getScale() const;
+		Vect4 getRotation() const; //returns a vect4 containing the x, y, and z rots
 		
-		Mat4 forwardMat(); //Returns a transform that moves something here
-		Mat4 inverseMat(); //Moves this to the origin
+		Mat4 forwardMat() const; //Returns a transform that moves something here
+		Mat4 inverseMat() const; //Moves this to the origin
 
-		std::string to_string();
+		std::string to_string() const;
 };
 
 #endif
