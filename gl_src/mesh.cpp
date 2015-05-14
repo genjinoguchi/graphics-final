@@ -121,6 +121,11 @@ void Mesh::loadFromObjFile(string filename) {
 	char buffer[1024];
 
 	fs.open(filename);
+
+	if(fs.fail()) {
+		cerr << "Failed to load file \"" << filename << "\"\n";
+		return;
+	}
 	
 	while(!fs.eof()) {
 		char *next, *curr;
