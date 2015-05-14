@@ -6,7 +6,8 @@ INCLUDES = -I/usr/local/include
 CXX_FLAGS = -c $(INCLUDES) -std=c++11 -Wall
 
 OBJECTS = main.o drawing.o mesh.o camera.o matrix.o util.o \
-	ui_sdl.o entity.o world.o widgets.o model.o
+	ui_sdl.o entity.o world.o widgets.o model.o \
+	yabsl-driver.o yabsl-parser.o yabsl-scanner.o
 
 OUTFILE = a.out
 
@@ -24,7 +25,7 @@ clean:
 $(OUTFILE): $(OBJECTS);
 	g++ $(OBJECTS) $(LIBS)
 
-main.o: main.cpp drawing.h mesh.h entity.h util.h
+main.o: main.cpp drawing.h mesh.h entity.h util.h yabsl-driver.hh
 	g++ main.cpp $(CXX_FLAGS)
 	
 drawing.o: drawing.cpp drawing.h util.h
@@ -56,3 +57,12 @@ widgets.o: widgets.cpp widgets.h
 
 model.o: model.cpp model.h matrix.h
 	g++ model.cpp $(CXX_FLAGS)
+
+
+
+yabsl-driver.o: yabsl-driver.cc yabsl-driver.hh yabsl-parser.hh
+	g++ yabsl-driver.cc $(CXX_FLAGS)
+yabsl-parser.o: yabsl-parser.cc yabsl-driver.hh yabsl-parser.hh
+	g++ yabsl-parser.cc $(CXX_FLAGS)
+yabsl-scanner.o: yabsl-scanner.cc 
+	g++ yabsl-scanner.cc $(CXX_FLAGS)

@@ -14,6 +14,8 @@
 #include "world.h"
 #include "model.h"
 
+#include "yabsl-driver.hh"
+
 #define MAX_HSV 1536
 
 using namespace std;
@@ -43,6 +45,10 @@ UI_SDL *ui_sdl;
 int main() {
 	int width = 800;
 	int height = 800;
+
+	//yabsl testing
+	yabsl_driver driver;
+	//Model::models["loadedtest"] = driver.parse("sample.yabsl");
 
 	//MODEL TESTING, TODO
 	Model::models["test"];
