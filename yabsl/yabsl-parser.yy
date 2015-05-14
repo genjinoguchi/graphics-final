@@ -169,7 +169,7 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
-			      $$ = $2;
+			      
 			  }
 			;
 
