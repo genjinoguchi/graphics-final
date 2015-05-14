@@ -48,7 +48,7 @@ int main() {
 
 	//yabsl testing
 	yabsl_driver driver;
-	//Model::models["loadedtest"] = driver.parse("sample.yabsl");
+	driver.parse("sample.yabsl");
 
 	//MODEL TESTING, TODO
 	Model::models["test"];
@@ -64,7 +64,10 @@ int main() {
 	Model::models["test"].getTransform("torus")->addTransformElement("r", "1", "0", "0");
 	
 
-	miTest = new ModelInstance("test");
+	for(auto it = Model::models.begin(); it != Model::models.end(); it++) {
+		cerr << it->first << "\n";
+	}
+	miTest = new ModelInstance("sample");
 	miTest->setLocation(Vect4 (0,0,-2));
 	miTest->setScale(1);
 

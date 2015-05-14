@@ -5,6 +5,7 @@ model sample {
 
 	transform a {
 		#do nothing
+		;
 	}
 	transform b {
 		r 0 0 0.3 ;
