@@ -55,6 +55,7 @@ public:
 
 	void applyTransform(Mat4 m); //Doesn't modify the verts, only transVerts
 
+	string to_string() const;
 
 	void genPrimEdge(Vect4 a, Vect4 b);
 	//Adds edges for a circle

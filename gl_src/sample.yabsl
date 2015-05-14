@@ -4,15 +4,14 @@ model sample {
 	mesh c { loadfromfile block1.obj; }
 
 	transform a {
-		#do nothing
-		;
+		t 0 0 0 ;
 	}
 	transform b {
-		r 0 0 0.3 ;
-		t 0 1 0   ;
+		r 0 0 0.7 ;
+		t 0.4 1 0   ;
 	}
 	transform c {
-		r 0 0 -0.3 ;
-		t 0 1 0    ;
+		r 0 0 2.7 ;
+		t 0.2 1 0    ;
 	}
 }

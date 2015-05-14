@@ -64,9 +64,6 @@ int main() {
 	Model::models["test"].getTransform("torus")->addTransformElement("r", "1", "0", "0");
 	
 
-	for(auto it = Model::models.begin(); it != Model::models.end(); it++) {
-		cerr << it->first << "\n";
-	}
 	miTest = new ModelInstance("sample");
 	miTest->setLocation(Vect4 (0,0,-2));
 	miTest->setScale(1);
@@ -77,7 +74,9 @@ int main() {
 	//Prepare mesh
 	mesh = new Mesh(); //Not on heap
 	///*
-	mesh->loadFromObjFile("wt_teapot.obj");
+
+	//TODO, this should work, for some reason i can't load more files after yabsl parsing
+	//mesh->loadFromObjFile("block1.obj");
 	{
 		Mesh *temp = new Mesh();
 		temp->genPrimTorus(1, 0.1);
@@ -106,11 +105,12 @@ int main() {
 		mesh->addChild("ball 4", temp);
 	}
 	//mesh->loadFromObjFile("testlandscape.obj");
-	mesh->setLocation(Vect4 (0, 0, -2));
+	mesh->setLocation(Vect4 (0, 99, -2));
 	mesh->setScale(1);
 	//*/
 	//mesh->genPrimTorus(4, 2);
 	//mesh->genPrimBox(4, 2, 3);
+	mesh = new Mesh();//TODO NOT THIS
 	w.addMesh(mesh);
 
 

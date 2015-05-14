@@ -184,6 +184,18 @@ void Mesh::loadFromObjFile(string filename) {
 	fs.close();
 }
 
+std::string Mesh::to_string() const {
+	std::string temp;
+
+	temp.append(Entity::to_string());
+
+	temp.append("\nfaces: ");
+	temp.append(std::to_string(faces.size()));
+	temp.append("\n");
+
+	return temp;
+}
+
 void Mesh::genPrimEdge(Vect4 a, Vect4 b) {
 	int av = addVert(a);
 	int bv = addVert(b);
@@ -431,7 +443,7 @@ void Mesh::genPrimTorus(double R, double r) {
 }
 
 void Mesh::doCommand(vector<string> c) {
-	if(!c[0].compare("loadfile")) {
+	if(!c[0].compare("loadfromfile")) {
 		loadFromObjFile(c[1]);
 	}
 }

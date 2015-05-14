@@ -51,7 +51,7 @@
 %code
 {
 	#include "yabsl-driver.hh"
-	#include "../model.h"
+	#include "model.h"
 }
 
 /* ========================= TOKENS ========================= */	
@@ -153,12 +153,12 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
 				 */
-				Model.models[driver.modelName].addTransform ($2);
+				Model::models[driver.modelName].addTransform ($2);
 
 				// It would be better to use iterators, but
 				// there would be way too many "std::"'s.
 				for (int i=0; i<$3.size(); i++) {
-					Model.models[driver.modelName].getTransform ($2)->
+					Model::models[driver.modelName].getTransform ($2)->
 						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
 				}
 

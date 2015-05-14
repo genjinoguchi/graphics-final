@@ -134,10 +134,12 @@ void Camera::renderMeshes(const World *w, Surface *s) {
 void Camera::renderModel(ModelInstance *m, Surface *s) {
 	m->prepareTransforms();
 
+	Mat4 mt = m->forwardMat();
+
 	Model *mclass = m->getModel();
 	//Doesn't support nested children
 	for(auto it = mclass->children.cbegin(); it != mclass->children.cend(); it++) {
-		renderMeshSingle(it->second, m->transforms[it->first], s);
+		renderMeshSingle(it->second, Mat4::mult(mt, m->transforms[it->first]), s);
 	}
 }
 

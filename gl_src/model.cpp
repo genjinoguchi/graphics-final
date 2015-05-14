@@ -78,7 +78,13 @@ Mat4 TransformSequence::createMat(var_hash *v) {
 
 
 //===ModelInstance===
-ModelInstance::ModelInstance(string m) : modelclass(m) {};
+ModelInstance::ModelInstance(string m) : modelclass(m) { 
+	if(!Model::models.count(m)) {
+		cerr << "INSTANCE OF MODEL WHICH DOESNT EXIST\n";
+	}
+
+
+};
 
 void ModelInstance::prepareTransforms() {
 	Model* m = getModel();
