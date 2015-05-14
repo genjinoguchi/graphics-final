@@ -1,5 +1,5 @@
 %skeleton "lalr1.cc" /* -*- C++ -*- */
-%require "3.0.2"
+%require "3.0.4"
 
 /* ==================== DEFINITIONS ======================== */
 
@@ -51,7 +51,7 @@
 %code
 {
 	#include "yabsl-driver.hh"
-	//#include "../model.h"
+	#include "../model.h"
 }
 
 /* ========================= TOKENS ========================= */	
@@ -125,7 +125,8 @@ unit : MODEL MODEL_BLOCK
 MODEL : "new-model" "id"
 		{
 			driver.modelName = $2;
-			driver.print_debug (std::string("Creating new model: ") + driver.modelName);	
+			driver.print_debug (std::string("Creating new model: ") + driver.modelName);
+			Model::models[$2];
 	  	}
 	  ;
 
@@ -136,7 +137,12 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
 			*/
-			//driver.model.addMesh($2);
+			Mesh *m = new Mesh();
+			for (int i=0; i<$3.size(); i++) {
+				m->doCommand($3[i]);
+			}
+
+			Model::models[driver.modelName].addChild($2, m);
 	   }
 	 ;
 
@@ -147,6 +153,15 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
 				 */
+				Model.models[driver.modelName].addTransform ($2);
+
+				// It would be better to use iterators, but
+				// there would be way too many "std::"'s.
+				for (int i=0; i<$3.size(); i++) {
+					Model.models[driver.modelName].getTransform ($2)->
+						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
+				}
+
 				//driver.model.addTransform($2);
 				//driver.model.getTransform($2)->command($3);
 			}
@@ -154,7 +169,7 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
-			      /* Placeholder for recursion */ 
+			      $$ = $2;
 			  }
 			;
 
