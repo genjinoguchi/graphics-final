@@ -51,7 +51,7 @@
 %code
 {
 	#include "yabsl-driver.hh"
-	#include "model.h"
+	//#include "model.h"
 }
 
 /* ========================= TOKENS ========================= */	
@@ -62,6 +62,8 @@
 %token					MODEL_IDENT 		"new-model"
 %token					MESH_IDENT 			"new-mesh"
 %token					TRANS_IDENT 		"new-transform"
+%token					VAR_IDENT			"new-var"
+%token 					ANIM_IDENT			"new-anim"
 %token 					NEW_LINE			"\n"
 %token 	<std::string>	IDENTIFIER 			"id"
 %token 					SEMICOLON			";"
@@ -70,12 +72,16 @@
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
 %type 	<std::string>								MODEL_BLOCK
+%type 	<std::string>								VAR
 %type 	<std::string>								TRANSFORM
 %type 	<std::vector<std::vector<std::string> > >	TRANS_BLOCK
 %type 	<std::vector<std::vector<std::string> > >	transform-directives 
 %type 	<std::string> 								MESH
 %type 	<std::vector<std::vector<std::string> > > 	MESH_BLOCK
 %type 	<std::vector<std::vector<std::string> > >	mesh-directives
+%type 	<std::string> 								ANIM
+%type 	<std::vector<std::vector<std::string> > > 	ANIM_BLOCK
+%type 	<std::vector<std::vector<std::string> > > 	anim-directives
 %type 	<std::vector<std::string> >					directive
 %type 	<std::vector<std::string> >					args
 %type 	<std::string>								unit
@@ -126,9 +132,16 @@ MODEL : "new-model" "id"
 		{
 			driver.modelName = $2;
 			driver.print_debug (std::string("Creating new model: ") + driver.modelName);
-			Model::models[$2];
+			//Model::models[$2];
 	  	}
 	  ;
+
+VAR : "new-var" "id" ";"
+	  {
+	      driver.vars.push_back ($2);
+		  $$ = $2;
+	  }
+	;
 
 MESH : "new-mesh" "id" MESH_BLOCK
 	   {
@@ -137,22 +150,20 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
 			*/
+/*
 			Mesh *m = new Mesh();
 			for (int i=0; i<$3.size(); i++) {
 				m->doCommand($3[i]);
 			}
 
 			Model::models[driver.modelName].addChild($2, m);
+*/
 	   }
 	 ;
 
 TRANSFORM : "new-transform" "id" TRANS_BLOCK
 		    {
-		 		/* 
-				 * Add the value of TRANS_BLOCK
-				 * to a new transform object.
-				 * Create the new transform, and then push commands to it.
-				 */
+/*
 				Model::models[driver.modelName].addTransform ($2);
 
 				// It would be better to use iterators, but
@@ -164,8 +175,14 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 
 				//driver.model.addTransform($2);
 				//driver.model.getTransform($2)->command($3);
+*/
 			}
 		  ;
+
+ANIM : "new-anim" "id" ANIM_BLOCK
+	   {
+	 
+	   }
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
@@ -196,18 +213,11 @@ MESH_BLOCK : "{" mesh-directives "}"
 			  }
 			;
 
-model-directives : MESH model-directives
-				   {
-				       /* placeholder for recursion */
-				   }
-				 | TRANSFORM model-directives
-				   {
-				       /* placeholder for recursion */
-				   }
-				 | %empty
-				   {
-
-				   }
+model-directives : MESH model-directives 		{}
+				 | TRANSFORM model-directives 	{}
+				 | VAR model-directives   		{}
+				 | ANIM model-directives 		{}
+				 | %empty 						{}
 				 ;
 
 mesh-directives : mesh-directives directive

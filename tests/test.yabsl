@@ -8,8 +8,11 @@ model DOOR {
 		loadfile BLAH1.OBJ;
 		loadfile BLAH2.OBJ;
 	}
-	
+
 	transform FRAME {}
+
+	var DOOR_SWING_LEFT;
+	var DOOR_SLIDE_LEFT;
 
 	transform DOOR_LEFT {
 		/* rotate it about the y axis */
@@ -17,5 +20,5 @@ model DOOR {
 		/* slide it in x */
 		t DOOR_SLIDE_LEFT 0 0;
 	}
-	/* commeeeeeeeeeeeeeeeents */	
+	/* commeeeeeeeeeeeeeeeents */
 }

@@ -32,8 +32,11 @@ class yabsl_driver
 		yabsl_driver ();
 		virtual ~yabsl_driver ();
 
+		// These values are being stored just for testing.
 		// Model
 		string modelName;
+		vector<std::string> vars;
+
 
 
 		// Scanning Phase ////////////////////////
