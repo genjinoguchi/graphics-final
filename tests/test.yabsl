@@ -1,12 +1,17 @@
+#hashtag
+#comment
 model DOOR {
 	mesh FRAME {
 		loadfile HURR.OBJ;
 		genprim SPHERE;
 	}
 	
+	# This is a comment
+
 	mesh DOOR_LEFT {
 		loadfile BLAH1.OBJ;
 		loadfile BLAH2.OBJ;
+################################# COMMENTTTTTT#####
 	}
 
 	transform FRAME {}
