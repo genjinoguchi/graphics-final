@@ -22,7 +22,8 @@
 	#include <string>
 	#include <sstream>
 	#include <vector>
-	#include <map>
+	#include <utility>
+	#include <unordered_map>
 
 	class yabsl_driver;
 	
@@ -131,14 +132,15 @@ unit : MODEL MODEL_BLOCK
 MODEL : "new-model" "id"
 		{
 			driver.modelName = $2;
-			driver.print_debug (std::string("Creating new model: ") + driver.modelName);
+			driver.print_debug (std::string ("Creating new model: ") + driver.modelName);
 			//Model::models[$2];
 	  	}
 	  ;
 
 VAR : "new-var" "id" ";"
 	  {
-	      driver.vars.push_back ($2);
+	      driver.print_debug (std::string ("Found new var: ") + $2);
+		  driver.vars.insert (std::make_pair<std::string, double>($2, 0));
 		  $$ = $2;
 	  }
 	;
@@ -150,6 +152,7 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
 			*/
+			driver.print_debug (std::string ("Creating new mesh: ") + $2);
 /*
 			Mesh *m = new Mesh();
 			for (int i=0; i<$3.size(); i++) {
@@ -163,6 +166,7 @@ MESH : "new-mesh" "id" MESH_BLOCK
 
 TRANSFORM : "new-transform" "id" TRANS_BLOCK
 		    {
+			driver.print_debug (std::string ("Creating new transform: ") + $2);
 /*
 				Model::models[driver.modelName].addTransform ($2);
 
@@ -181,8 +185,9 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 
 ANIM : "new-anim" "id" ANIM_BLOCK
 	   {
-	 
+	       driver.print_debug (std::string("Creating new anim: ") + $2); 
 	   }
+	   ;
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
@@ -212,6 +217,12 @@ MESH_BLOCK : "{" mesh-directives "}"
 			      $$ = $2;
 			  }
 			;
+
+ANIM_BLOCK : "{" anim-directives "}"
+		     {
+		         $$ = $2;
+			 }
+		   ;
 
 model-directives : MESH model-directives 		{}
 				 | TRANSFORM model-directives 	{}
@@ -247,6 +258,18 @@ transform-directives : transform-directives directive
 					   }
 					 ;
 
+anim-directives : anim-directives directive
+				  {
+				      $1.push_back ($2);
+					  $$ = $1;
+				  }
+				| %empty
+				  {
+				      std::vector<std::vector<string> > tmp;
+					  $$ = tmp;
+					  std::vector<std::vector<string> > ().swap(tmp);
+				  }
+				;
 
 
 directive : args ";"
