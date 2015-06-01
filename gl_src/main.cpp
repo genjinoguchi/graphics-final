@@ -65,7 +65,9 @@ int main() {
 
 	Model::models["test"].addVar("slide_sphere");
 	Model::models["test"].anims["default"];
+	// Only for varys
 	Model::models["test"].anims["default"].addFunc("slide_sphere", new AnimFunc());
+
 
 	//add transforms for children
 	Model::models["test"].addTransform("torus");
