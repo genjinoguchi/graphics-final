@@ -84,7 +84,10 @@ WHITESPACE  [ \t\r]+
 	loc.step ();
 }
 	/* /////////////////////////////////////////////////// */
-	/* =================== COMMENTS ====================== */	
+	/* =================== COMMENTS ====================== */
+<*>"#"(.*)						{
+	driver.print_debug (loc, "Found line comment");
+}
 <*>"/*"							{
 	driver.print_debug (loc, "Found comment start tag");
 	yy_push_state (COMMENT);
