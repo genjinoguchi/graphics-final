@@ -51,20 +51,36 @@ int main() {
 	driver.parse("sample.yabsl");
 
 	//MODEL TESTING, TODO
+	//create model
 	Model::models["test"];
+
+	//add child meshes
 	Model::models["test"].addChild("torus", new Mesh());
 	Model::models["test"].addChild("sphere", new Mesh());
 
+	//Populate child meshes with polygons
 	Model::models["test"].getChild("torus")->genPrimTorus(5, 1);
 	Model::models["test"].getChild("sphere")->genPrimSphere(2);
 
+
+	Model::models["test"].addVar("slide_sphere");
+	Model::models["test"].anims["default"];
+	Model::models["test"].anims["default"].addFunc("slide_sphere", new AnimFunc());
+
+	//add transforms for children
 	Model::models["test"].addTransform("torus");
 	Model::models["test"].addTransform("sphere");
 
+	//populate transforms
 	Model::models["test"].getTransform("torus")->addTransformElement("r", "1", "0", "0");
+	Model::models["test"].getTransform("sphere")->addTransformElement("t", "slide_sphere", "0", "0");
 	
 
-	miTest = new ModelInstance("sample");
+	for(auto it = Model::models.begin(); it != Model::models.end(); it++) {
+		cerr << it->first << "\n";
+	}
+
+	miTest = new ModelInstance("test");
 	miTest->setLocation(Vect4 (0,0,-2));
 	miTest->setScale(1);
 

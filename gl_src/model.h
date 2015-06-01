@@ -26,21 +26,36 @@ public:
 	Mat4 createMat(var_hash *v);
 };
 
+class AnimFunc {
+public:
+	double eval(double x); //evaluate the function at an x from 0-1 (undefined otherwise)
+};
+
 class Anim {
+public:
+	typedef struct { 
+		string var;
+		AnimFunc* func;
+	} varsetter;
+	vector<varsetter> functions;
 	
+
+	void addFunc(string name, AnimFunc *f);
+	void prepareVars(var_hash *vars);
 };
 
 class Model : public Mesh{
 public:
 	static unordered_map<string, Model> models;
 
-
+	void addVar(string name);
 	void addTransform(string name);
 	TransformSequence* getTransform(string name);
 
+	//set anims directly, since they're public
+	unordered_map<string, Anim> anims;
 	unordered_map<string, TransformSequence> transforms; //should be one for each mesh
 
-private:
 	var_hash vars;
 };
 
@@ -53,10 +68,12 @@ public:
 	//sets all transforms in the parents
 	void prepareTransforms();
 
+	
+
+	string currState; //which anim is it in
 	Model* getModel();
 private:
 	string modelclass;
-	string currState;
 };
 
 

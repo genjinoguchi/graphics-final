@@ -14,4 +14,8 @@ model sample {
 		r 0 0 2.7 ;
 		t 0.2 1 0    ;
 	}
+
+	#anim foo {
+		#vary x { }
+#	}
 }

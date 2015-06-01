@@ -52,7 +52,7 @@
 #line 52 "yabsl-parser.yy" // lalr1.cc:408
 
 	#include "yabsl-driver.hh"
-	#include "model.h"
+	//#include "model.h"
 
 #line 58 "yabsl-parser.cc" // lalr1.cc:408
 
@@ -819,7 +819,7 @@ namespace yy {
     {
 			driver.modelName = yystack_[0].value.as< std::string > ();
 			driver.print_debug (std::string("Creating new model: ") + driver.modelName);
-			Model::models[yystack_[0].value.as< std::string > ()];
+			//Model::models[$2];
 	  	}
 #line 825 "yabsl-parser.cc" // lalr1.cc:847
     break;
@@ -832,166 +832,159 @@ namespace yy {
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
 			*/
+			/*
 			Mesh *m = new Mesh();
-			for (int i=0; i<yystack_[0].value.as< std::vector<std::vector<std::string> >  > ().size(); i++) {
-				m->doCommand(yystack_[0].value.as< std::vector<std::vector<std::string> >  > ()[i]);
+			for (int i=0; i<$3.size(); i++) {
+				m->doCommand($3[i]);
 			}
 
-			Model::models[driver.modelName].addChild(yystack_[1].value.as< std::string > (), m);
+			Model::models[driver.modelName].addChild($2, m);
+			*/
 	   }
-#line 843 "yabsl-parser.cc" // lalr1.cc:847
+#line 845 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 6:
-#line 150 "yabsl-parser.yy" // lalr1.cc:847
+#line 152 "yabsl-parser.yy" // lalr1.cc:847
     {
 		 		/* 
 				 * Add the value of TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
 				 */
-				Model::models[driver.modelName].addTransform (yystack_[1].value.as< std::string > ());
+				//Model::models[driver.modelName].addTransform ($2);
 
 				// It would be better to use iterators, but
 				// there would be way too many "std::"'s.
-				for (int i=0; i<yystack_[0].value.as< std::vector<std::vector<std::string> >  > ().size(); i++) {
-					Model::models[driver.modelName].getTransform (yystack_[1].value.as< std::string > ())->
-						addTransformElement (yystack_[0].value.as< std::vector<std::vector<std::string> >  > ()[i][0],yystack_[0].value.as< std::vector<std::vector<std::string> >  > ()[i][1],yystack_[0].value.as< std::vector<std::vector<std::string> >  > ()[i][2],yystack_[0].value.as< std::vector<std::vector<std::string> >  > ()[i][3]);
+				/*
+				for (int i=0; i<$3.size(); i++) {
+					Model::models[driver.modelName].getTransform ($2)->
+						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
 				}
 
-				//driver.model.addTransform($2);
-				//driver.model.getTransform($2)->command($3);
+				driver.model.addTransform($2);
+				driver.model.getTransform($2)->command($3);
+				*/
 			}
-#line 866 "yabsl-parser.cc" // lalr1.cc:847
+#line 870 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 7:
-#line 171 "yabsl-parser.yy" // lalr1.cc:847
+#line 175 "yabsl-parser.yy" // lalr1.cc:847
     {
 			      
 			  }
-#line 874 "yabsl-parser.cc" // lalr1.cc:847
+#line 878 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 8:
-#line 177 "yabsl-parser.yy" // lalr1.cc:847
+#line 181 "yabsl-parser.yy" // lalr1.cc:847
     {
 			      yylhs.value.as< std::vector<std::vector<std::string> >  > () = yystack_[1].value.as< std::vector<std::vector<std::string> >  > ();
-				  /*
-				  #ifdef DEBUG
-				  int i,j;
-				  for (i=0; i<$2.size(); i++) {
-					  for (j=0; j<$2[i].size(); j++) {
-					      std::cout << $2[i][j] << " ";
-					  }
-                      std::cout << std::endl;
-				  }
-				  #endif
-				  */
 			  }
-#line 893 "yabsl-parser.cc" // lalr1.cc:847
+#line 886 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 9:
-#line 194 "yabsl-parser.yy" // lalr1.cc:847
+#line 187 "yabsl-parser.yy" // lalr1.cc:847
     {
 			      yylhs.value.as< std::vector<std::vector<std::string> >  > () = yystack_[1].value.as< std::vector<std::vector<std::string> >  > ();
 			  }
-#line 901 "yabsl-parser.cc" // lalr1.cc:847
+#line 894 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 10:
-#line 200 "yabsl-parser.yy" // lalr1.cc:847
+#line 193 "yabsl-parser.yy" // lalr1.cc:847
     {
 				       /* placeholder for recursion */
 				   }
-#line 909 "yabsl-parser.cc" // lalr1.cc:847
+#line 902 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 11:
-#line 204 "yabsl-parser.yy" // lalr1.cc:847
+#line 197 "yabsl-parser.yy" // lalr1.cc:847
     {
 				       /* placeholder for recursion */
 				   }
-#line 917 "yabsl-parser.cc" // lalr1.cc:847
+#line 910 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 12:
-#line 208 "yabsl-parser.yy" // lalr1.cc:847
+#line 201 "yabsl-parser.yy" // lalr1.cc:847
     {
 
 				   }
-#line 925 "yabsl-parser.cc" // lalr1.cc:847
+#line 918 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 13:
-#line 214 "yabsl-parser.yy" // lalr1.cc:847
+#line 207 "yabsl-parser.yy" // lalr1.cc:847
     {
 				      yystack_[1].value.as< std::vector<std::vector<std::string> >  > ().push_back (yystack_[0].value.as< std::vector<std::string>  > ());
 					  yylhs.value.as< std::vector<std::vector<std::string> >  > () = yystack_[1].value.as< std::vector<std::vector<std::string> >  > ();
 				  }
-#line 934 "yabsl-parser.cc" // lalr1.cc:847
+#line 927 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 14:
-#line 219 "yabsl-parser.yy" // lalr1.cc:847
+#line 212 "yabsl-parser.yy" // lalr1.cc:847
     {
 		   			     std::vector<std::vector<string> > tmp;
 		   			     yylhs.value.as< std::vector<std::vector<std::string> >  > () = tmp;
 		   			     std::vector<std::vector<string> > ().swap(tmp);
 					 }
-#line 944 "yabsl-parser.cc" // lalr1.cc:847
+#line 937 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 15:
-#line 227 "yabsl-parser.yy" // lalr1.cc:847
+#line 220 "yabsl-parser.yy" // lalr1.cc:847
     {
 					       yystack_[1].value.as< std::vector<std::vector<std::string> >  > ().push_back (yystack_[0].value.as< std::vector<std::string>  > ());
 						   yylhs.value.as< std::vector<std::vector<std::string> >  > () = yystack_[1].value.as< std::vector<std::vector<std::string> >  > ();
 					   }
-#line 953 "yabsl-parser.cc" // lalr1.cc:847
+#line 946 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 16:
-#line 232 "yabsl-parser.yy" // lalr1.cc:847
+#line 225 "yabsl-parser.yy" // lalr1.cc:847
     {
 		   			       std::vector<std::vector<string> > tmp;
 		   				   yylhs.value.as< std::vector<std::vector<std::string> >  > () = tmp;
 		   				   std::vector<std::vector<string> > ().swap(tmp);
 
 					   }
-#line 964 "yabsl-parser.cc" // lalr1.cc:847
+#line 957 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 17:
-#line 243 "yabsl-parser.yy" // lalr1.cc:847
+#line 236 "yabsl-parser.yy" // lalr1.cc:847
     {
 		    	 yylhs.value.as< std::vector<std::string>  > () = yystack_[1].value.as< std::vector<std::string>  > ();
 			}
-#line 972 "yabsl-parser.cc" // lalr1.cc:847
+#line 965 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 18:
-#line 249 "yabsl-parser.yy" // lalr1.cc:847
+#line 242 "yabsl-parser.yy" // lalr1.cc:847
     {
 		   yystack_[1].value.as< std::vector<std::string>  > ().push_back (yystack_[0].value.as< std::string > ());
 		   yylhs.value.as< std::vector<std::string>  > () = yystack_[1].value.as< std::vector<std::string>  > ();
 	   }
-#line 981 "yabsl-parser.cc" // lalr1.cc:847
+#line 974 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
   case 19:
-#line 254 "yabsl-parser.yy" // lalr1.cc:847
+#line 247 "yabsl-parser.yy" // lalr1.cc:847
     {
 	       std::vector<std::string> tmp;
 		   yylhs.value.as< std::vector<std::string>  > () = tmp;
 		   std::vector<std::string> ().swap(tmp);
 	   }
-#line 991 "yabsl-parser.cc" // lalr1.cc:847
+#line 984 "yabsl-parser.cc" // lalr1.cc:847
     break;
 
 
-#line 995 "yabsl-parser.cc" // lalr1.cc:847
+#line 988 "yabsl-parser.cc" // lalr1.cc:847
             default:
               break;
             }
@@ -1367,8 +1360,8 @@ namespace yy {
 	yabsl_parser
 ::yyrline_[] =
   {
-       0,   118,   118,   122,   125,   133,   149,   170,   176,   193,
-     199,   203,   207,   213,   218,   226,   231,   242,   248,   253
+       0,   118,   118,   122,   125,   133,   151,   174,   180,   186,
+     192,   196,   200,   206,   211,   219,   224,   235,   241,   246
   };
 
   // Print the state stack on the debug stream.
@@ -1407,8 +1400,8 @@ namespace yy {
 
 
 } // yy
-#line 1411 "yabsl-parser.cc" // lalr1.cc:1155
-#line 265 "yabsl-parser.yy" // lalr1.cc:1156
+#line 1404 "yabsl-parser.cc" // lalr1.cc:1155
+#line 258 "yabsl-parser.yy" // lalr1.cc:1156
 
 
 
