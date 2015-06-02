@@ -133,13 +133,16 @@ MODEL : "new-model" "id"
 		{
 			driver.modelName = $2;
 			driver.print_debug (std::string ("Creating new model: ") + driver.modelName);
+
+			Model::models[$2];
 	  	}
 	  ;
 
 VAR : "new-var" "id" ";"
 	  {
 	      driver.print_debug (std::string ("Found new var: ") + $2);
-		  driver.vars.insert (std::make_pair<std::string, double>($2, 0));
+	      Model::models[driver.modelName].addVar($2);
+
 		  $$ = $2;
 	  }
 	;
@@ -152,44 +155,68 @@ MESH : "new-mesh" "id" MESH_BLOCK
 			* Then, add it to the "global" model.
 			*/
 			driver.print_debug (std::string ("Creating new mesh: ") + $2);
-/*
+			
 			Mesh *m = new Mesh();
 			for (int i=0; i<$3.size(); i++) {
 				m->doCommand($3[i]);
 			}
 
 			Model::models[driver.modelName].addChild($2, m);
-*/
 	   }
 	 ;
 
 TRANSFORM : "new-transform" "id" TRANS_BLOCK
 		    {
 			    driver.print_debug (std::string ("Creating new transform: ") + $2);
+				Model::models[driver.modelName].addTransform ($2);
 		 		/* 
 				 * Add the value of TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
 				 */
-				//Model::models[driver.modelName].addTransform ($2);
 
 				// It would be better to use iterators, but
 				// there would be way too many "std::"'s.
-				/*
-				for (int i=0; i<$3.size(); i++) {
+				for (int i=0; i<$3.size (); i++) {
 					Model::models[driver.modelName].getTransform ($2)->
 						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
 				}
 
 				//driver.model.addTransform($2);
 				//driver.model.getTransform($2)->command($3);
-				*/
 			}
 		  ;
 
 ANIM : "new-anim" "id" ANIM_BLOCK
 	   {
-	       driver.print_debug (std::string("Creating new anim: ") + $2); 
+	       driver.print_debug (std::string("Creating new anim: ") + $2);
+		   Model::models[driver.modelName].anims[$2];
+		   /* 
+		    * Parse through ANIM_BLOCK to add methods to 
+			* the newly created anim object.
+			*/
+		   
+		   // it is standard to use iterators, but
+		   // the code would become messy and
+		   // filled with too many "std::"'s.
+		   std::string varyToken ("vary");
+		   std::string durationToken ("duration");
+		   std::string nextToken ("next");
+		   std::string animateToken ("animate");
+		   
+		   for (int i=0; i<$3.size (); i++) {
+			   if ($3[i][0].compare (varyToken)) {
+			       Model::models[driver.getModelName]
+				       .anims[$2]
+					   .addFunc($3[i][1], new AnimFunc());
+			   } else if ($3[i][0].compare (durationToken)) {
+
+			   } else if ($3[i][0].compare (nextToken)) { 
+			   
+			   } else if ($3[i][0].compare (animateToken)) {
+ 			   
+			   }
+		   }
 	   }
 	   ;
 
