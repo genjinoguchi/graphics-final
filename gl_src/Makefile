@@ -25,7 +25,7 @@ clean:
 $(OUTFILE): $(OBJECTS);
 	g++ $(OBJECTS) $(LIBS)
 
-main.o: main.cpp drawing.h mesh.h entity.h util.h yabsl-driver.hh
+main.o: main.cpp drawing.h mesh.h entity.h util.h yabsl-driver.hh model.h
 	g++ main.cpp $(CXX_FLAGS)
 	
 drawing.o: drawing.cpp drawing.h util.h

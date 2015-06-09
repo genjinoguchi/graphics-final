@@ -63,15 +63,38 @@ int main() {
 	Model::models["test"].getChild("sphere")->genPrimSphere(2);
 
 
+	//Prepare animation
 	Model::models["test"].addVar("slide_sphere");
+	Model::models["test"].addVar("torus_spin");
 	Model::models["test"].anims["default"];
-	Model::models["test"].anims["default"].addFunc("slide_sphere", new AnimFunc());
+	//Model::models["test"].anims["default"].addFunc("slide_sphere", AnimFunc::constFunc(8));
+
+	//Setup function for sphere anim
+	AnimFunc* tempfunc = new AnimFunc();
+	tempfunc->addOrderedPair(0, -1);
+	tempfunc->addOrderedPair(0.5, 1);
+	tempfunc->addOrderedPair(1, -1);
+	
+	//setup sphere anim
+	Model::models["test"].anims["default"].addFunc("slide_sphere", tempfunc);
+	Model::models["test"].anims["default"].duration = 5;
+
+
+	//setup function for torus anim
+	tempfunc = new AnimFunc();
+	tempfunc->addOrderedPair(0, 0);
+	tempfunc->addOrderedPair(1, 6.28);
+	
+	Model::models["test"].anims["default"].addFunc("torus_spin", tempfunc);
+	Model::models["test"].anims["default"].duration = 5;
 
 	//add transforms for children
 	Model::models["test"].addTransform("torus");
 	Model::models["test"].addTransform("sphere");
 
 	//populate transforms
+	Model::models["test"].getTransform("torus")->addTransformElement("r", "0", "torus_spin", "0");
+	Model::models["test"].getTransform("torus")->addTransformElement("r", "1", "0", "0");
 	Model::models["test"].getTransform("torus")->addTransformElement("r", "1", "0", "0");
 	Model::models["test"].getTransform("sphere")->addTransformElement("t", "slide_sphere", "0", "0");
 	
@@ -176,6 +199,7 @@ void runSDL() {
 		//mesh->setRotation(ui_sdl->rotation[0], ui_sdl->rotation[1], ui_sdl->rotation[2]);
 		//mesh->setLocation(ui_sdl->translation);
 		//mesh->setScale(ui_sdl->scale);
+		miTest->update(0.1);
 
 		//Render Mesh
 		surface->clear(255);

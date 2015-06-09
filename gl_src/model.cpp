@@ -91,21 +91,97 @@ Mat4 TransformSequence::createMat(var_hash *v) {
 
 
 //===Functions===
+AnimFunc::AnimFunc() {
+	type = 'l';
+}
+
+AnimFunc* AnimFunc::constFunc(double constant) {
+	AnimFunc *temp = new AnimFunc;
+	temp->type = 'c';
+	temp->addOrderedPair(0, constant);
+
+	return temp;
+}
+
 double AnimFunc::eval(double x) { //TODO, for testing only
-	return 1.5;
+	switch(type) {
+		case 'c':
+			return pairs.begin()->second;
+			break;
+		case 'l':
+			{
+				if(pairs.empty()) {
+					cerr << "No control points in animfunc\n";
+					return 0;
+				}
+
+				auto it = pairs.begin();
+
+				//check if before first point
+				if(it->first > x) {
+					return it->second;
+				}
+
+				while(true) {
+					//Check if after last point
+					//ends dont lerp, just continue at last y value
+					if(std::next(it) == pairs.end()) {
+						return it->second;
+					} 
+
+					//otherwise, check if reached right pair, do the thing
+					if(std::next(it)->first >= x) {
+						return lerp(
+								it->second, 
+								std::next(it)->second, 
+								(x - it->first) / (std::next(it)->first - it->first)); 
+					}
+
+					it++;
+				}
+				break;
+			}
+		default:
+			cerr << "Error invalid func type\n";
+			return -1;
+			break;
+	}
+}
+
+//x from 0-1
+void AnimFunc::addOrderedPair(double x, double y) {
+	//check bounds
+	if(x > 1 || x < 0) {
+		cerr << "Can't add ordered pairs outside x E [0,1]\n";
+		return;
+	}
+
+	pairs[x] = y;
 }
 
 
 //===Anims===
+Anim::Anim() {
+	duration = 0;
+	next = "loop";
+}
+
 void Anim::addFunc(string name, AnimFunc *f) {
 	functions.push_back({name, f});
 }
 
-void Anim::prepareVars(var_hash *vars) {
+void Anim::prepareVars(var_hash *vars, double time) {
 
-	//placeholder
-	double x = 0.1;
+	double x;
 
+	if(duration == 0) {
+		x = 0;
+	} else {
+		x = time / duration;
+	}
+		
+
+	//loop through all function and apply them to vars
 	for(int i = 0; (size_t)i < functions.size(); i++) {
 		if(vars->count(functions[i].var)) {
 			vars->at(functions[i].var) = functions[i].func->eval(x);
@@ -123,7 +199,7 @@ ModelInstance::ModelInstance(string m) : modelclass(m) {
 		cerr << "INSTANCE OF MODEL WHICH DOESNT EXIST\n";
 	}
 
-	currState = "default";
+	currstate = "default";
 };
 
 void ModelInstance::prepareTransforms() {
@@ -135,10 +211,10 @@ void ModelInstance::prepareTransforms() {
 	}
 
 	//Check that an animation exists for the current state
-	if(m->anims.count(currState)) {
-		m->anims[currState].prepareVars(&(m->vars));
+	if(m->anims.count(currstate)) {
+		m->anims[currstate].prepareVars(&(m->vars), animtime);
 	} else {
-		cerr << "Error: no animation named \"" << currState << "\"\n";
+		cerr << "Error: no animation named \"" << currstate << "\"\n";
 	}
 	
 	//Prepare all transforms using aforementioned vars
@@ -147,6 +223,33 @@ void ModelInstance::prepareTransforms() {
 	}
 
 
+}
+
+void ModelInstance::update(double time) {
+	Model* m = getModel();
+
+	//Check that an animation exists for the current state
+	if(!m->anims.count(currstate)) {
+		return;
+	}
+
+	Anim* animP = &(m->anims[currstate]);
+	double duration = animP->duration;
+	
+	animtime += time;
+	if(animP->next == "loop") {
+		while(animtime > duration) {
+			animtime -= duration;
+		}
+	} else {
+		if(!m->anims.count(animP->next)) {
+			cerr << "Error, next anim set to \"" << animP->next << "\", but anim does not exist\n";
+			return;
+		}
+		currstate = animP->next;
+		animtime = 0;
+	}
+	
 }
 
 Model* ModelInstance::getModel() {

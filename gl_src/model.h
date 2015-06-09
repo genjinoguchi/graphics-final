@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 #include "matrix.h"
 #include "mesh.h"
@@ -12,6 +13,7 @@
 using std::string;
 using std::vector;
 using std::unordered_map;
+using std::map;
 
 typedef unordered_map<string, double> var_hash;
 
@@ -28,7 +30,19 @@ public:
 
 class AnimFunc {
 public:
+	//creates a lerp function by default
+	AnimFunc();
+	static AnimFunc* constFunc(double constant);
+
 	double eval(double x); //evaluate the function at an x from 0-1 (undefined otherwise)
+
+	//x from 0-1
+	void addOrderedPair(double x, double y);
+
+private:
+	//points between which to interpolate
+	char type; //'c' for constant, 'l' for lerp
+	map<double, double> pairs;
 };
 
 class Anim {
@@ -39,9 +53,14 @@ public:
 	} varsetter;
 	vector<varsetter> functions;
 	
+	Anim();
 
 	void addFunc(string name, AnimFunc *f);
-	void prepareVars(var_hash *vars);
+	void prepareVars(var_hash *vars, double time);
+
+	//loops on repeat by default ('loop')
+	string next;
+	double duration;
 };
 
 class Model : public Mesh{
@@ -68,9 +87,12 @@ public:
 	//sets all transforms in the parents
 	void prepareTransforms();
 
+	//advances the animation by 'time' seconds
+	void update(double time);
 	
 
-	string currState; //which anim is it in
+	string currstate; //which anim is it in
+	double animtime;//how far into the anim are you
 	Model* getModel();
 private:
 	string modelclass;
