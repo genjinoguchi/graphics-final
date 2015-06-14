@@ -16,11 +16,22 @@ model DOOR {
 
 	transform FRAME {}
 
+	var DOOR_SWING_LEFT;
+	var DOOR_SLIDE_LEFT;
+
 	transform DOOR_LEFT {
 		/* rotate it about the y axis */
 		r 0 DOOR_SWING_LEFT 0;
 		/* slide it in x */
 		t DOOR_SLIDE_LEFT 0 0;
 	}
-	/* commeeeeeeeeeeeeeeeents */	
+	/* commeeeeeeeeeeeeeeeents */
+		
+	#used to set default values for all vars
+	anim CLEAR {
+		set DOOR_SLIDE_LEFT 0;
+		set DOOR_SWING_LEFT 0;
+		set DOOR_SLIDE_RIGHT 0;
+		set DOOR_SWING_RIGHT 0 ;
+	}
 }

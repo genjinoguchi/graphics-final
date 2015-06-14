@@ -22,7 +22,8 @@
 	#include <string>
 	#include <sstream>
 	#include <vector>
-	#include <map>
+	#include <utility>
+	#include <unordered_map>
 
 	class yabsl_driver;
 	
@@ -62,6 +63,8 @@
 %token					MODEL_IDENT 		"new-model"
 %token					MESH_IDENT 			"new-mesh"
 %token					TRANS_IDENT 		"new-transform"
+%token					VAR_IDENT			"new-var"
+%token 					ANIM_IDENT			"new-anim"
 %token 					NEW_LINE			"\n"
 %token 	<std::string>	IDENTIFIER 			"id"
 %token 					SEMICOLON			";"
@@ -70,12 +73,16 @@
 // Tokens expect genuine C++ types because
 // we're using variant-based semantic values.
 %type 	<std::string>								MODEL_BLOCK
+%type 	<std::string>								VAR
 %type 	<std::string>								TRANSFORM
 %type 	<std::vector<std::vector<std::string> > >	TRANS_BLOCK
 %type 	<std::vector<std::vector<std::string> > >	transform-directives 
 %type 	<std::string> 								MESH
 %type 	<std::vector<std::vector<std::string> > > 	MESH_BLOCK
 %type 	<std::vector<std::vector<std::string> > >	mesh-directives
+%type 	<std::string> 								ANIM
+%type 	<std::vector<std::vector<std::string> > > 	ANIM_BLOCK
+%type 	<std::vector<std::vector<std::string> > > 	anim-directives
 %type 	<std::vector<std::string> >					directive
 %type 	<std::vector<std::string> >					args
 %type 	<std::string>								unit
@@ -125,10 +132,20 @@ unit : MODEL MODEL_BLOCK
 MODEL : "new-model" "id"
 		{
 			driver.modelName = $2;
-			driver.print_debug (std::string("Creating new model: ") + driver.modelName);
-			//Model::models[$2];
+			driver.print_debug (std::string ("Creating new model: ") + driver.modelName);
+
+			Model::models[$2];
 	  	}
 	  ;
+
+VAR : "new-var" "id" ";"
+	  {
+	      driver.print_debug (std::string ("Found new var: ") + $2);
+	      Model::models[driver.modelName].addVar($2);
+
+		  $$ = $2;
+	  }
+	;
 
 MESH : "new-mesh" "id" MESH_BLOCK
 	   {
@@ -137,39 +154,71 @@ MESH : "new-mesh" "id" MESH_BLOCK
 		    * to a new mesh object.
 			* Then, add it to the "global" model.
 			*/
-			/*
+			driver.print_debug (std::string ("Creating new mesh: ") + $2);
+			
 			Mesh *m = new Mesh();
 			for (int i=0; i<$3.size(); i++) {
 				m->doCommand($3[i]);
 			}
 
 			Model::models[driver.modelName].addChild($2, m);
-			*/
 	   }
 	 ;
 
 TRANSFORM : "new-transform" "id" TRANS_BLOCK
 		    {
+			    driver.print_debug (std::string ("Creating new transform: ") + $2);
+				Model::models[driver.modelName].addTransform ($2);
 		 		/* 
 				 * Add the value of TRANS_BLOCK
 				 * to a new transform object.
 				 * Create the new transform, and then push commands to it.
 				 */
-				//Model::models[driver.modelName].addTransform ($2);
 
 				// It would be better to use iterators, but
 				// there would be way too many "std::"'s.
-				/*
-				for (int i=0; i<$3.size(); i++) {
+				for (int i=0; i<$3.size (); i++) {
 					Model::models[driver.modelName].getTransform ($2)->
 						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
 				}
 
-				driver.model.addTransform($2);
-				driver.model.getTransform($2)->command($3);
-				*/
+				//driver.model.addTransform($2);
+				//driver.model.getTransform($2)->command($3);
 			}
 		  ;
+
+ANIM : "new-anim" "id" ANIM_BLOCK
+	   {
+	       driver.print_debug (std::string("Creating new anim: ") + $2);
+		   Model::models[driver.modelName].anims[$2];
+		   /* 
+		    * Parse through ANIM_BLOCK to add methods to 
+			* the newly created anim object.
+			*/
+		   
+		   // it is standard to use iterators, but
+		   // the code would become messy and
+		   // filled with too many "std::"'s.
+		   std::string varyToken ("vary");
+		   std::string durationToken ("duration");
+		   std::string nextToken ("next");
+		   std::string animateToken ("animate");
+		   
+		   for (int i=0; i<$3.size (); i++) {
+			   if ($3[i][0].compare (varyToken)) {
+			       Model::models[driver.getModelName]
+				       .anims[$2]
+					   .addFunc($3[i][1], new AnimFunc());
+			   } else if ($3[i][0].compare (durationToken)) {
+
+			   } else if ($3[i][0].compare (nextToken)) { 
+			   
+			   } else if ($3[i][0].compare (animateToken)) {
+ 			   
+			   }
+		   }
+	   }
+	   ;
 
 MODEL_BLOCK : "{" model-directives "}"
 			  {
@@ -189,18 +238,17 @@ MESH_BLOCK : "{" mesh-directives "}"
 			  }
 			;
 
-model-directives : MESH model-directives
-				   {
-				       /* placeholder for recursion */
-				   }
-				 | TRANSFORM model-directives
-				   {
-				       /* placeholder for recursion */
-				   }
-				 | %empty
-				   {
+ANIM_BLOCK : "{" anim-directives "}"
+		     {
+		         $$ = $2;
+			 }
+		   ;
 
-				   }
+model-directives : MESH model-directives 		{}
+				 | TRANSFORM model-directives 	{}
+				 | VAR model-directives   		{}
+				 | ANIM model-directives 		{}
+				 | %empty 						{}
 				 ;
 
 mesh-directives : mesh-directives directive
@@ -230,6 +278,18 @@ transform-directives : transform-directives directive
 					   }
 					 ;
 
+anim-directives : anim-directives directive
+				  {
+				      $1.push_back ($2);
+					  $$ = $1;
+				  }
+				| %empty
+				  {
+				      std::vector<std::vector<string> > tmp;
+					  $$ = tmp;
+					  std::vector<std::vector<string> > ().swap(tmp);
+				  }
+				;
 
 
 directive : args ";"
