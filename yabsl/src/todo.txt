@@ -1,0 +1,6 @@
+TODO
+====
+
+Genji:
+* Variable error checking
+* 

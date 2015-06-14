@@ -3,7 +3,7 @@
 # define YABSL_DRIVER_HH
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include "yabsl-parser.hh"
 //#include "../gl_src/model.h"
 
@@ -32,8 +32,11 @@ class yabsl_driver
 		yabsl_driver ();
 		virtual ~yabsl_driver ();
 
+		// These values are being stored just for testing.
 		// Model
 		string modelName;
+		unordered_map<std::string, double> vars;
+
 
 
 		// Scanning Phase ////////////////////////

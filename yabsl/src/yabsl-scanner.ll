@@ -103,14 +103,23 @@ WHITESPACE  [ \t\r]+
 	driver.print_debug (loc, "Found new-model identifier");
 	return yy::yabsl_parser::make_MODEL_IDENT (loc);
 }
-<BLOCK>"mesh"							{
+<BLOCK>"mesh"					{
 	driver.print_debug (loc, "Found new-mesh identifier");
 	return yy::yabsl_parser::make_MESH_IDENT (loc);
 }
-<BLOCK>"transform"						{
+<BLOCK>"transform"				{
 	driver.print_debug (loc, "Found new-transform identifier");
 	return yy::yabsl_parser::make_TRANS_IDENT (loc);
 }
+<BLOCK>"anim"					{
+	driver.print_debug (loc, "Found new-anim identifier");
+	return yy::yabsl_parser::make_ANIM_IDENT (loc);
+}
+<BLOCK>"var"					{
+	driver.print_debug (loc, "Found new-var identifier");
+	return yy::yabsl_parser::make_VAR_IDENT (loc);
+}
+
 	/* /////////////////////////////////////////////////// */
 	/* =================== BRACKETS ====================== */
 <INITIAL,BLOCK>\{								{

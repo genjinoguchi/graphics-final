@@ -88,6 +88,7 @@ int main() {
 	Model::models["test"].anims["default"].addFunc("torus_spin", tempfunc);
 	Model::models["test"].anims["default"].duration = 5;
 
+
 	//add transforms for children
 	Model::models["test"].addTransform("torus");
 	Model::models["test"].addTransform("sphere");
