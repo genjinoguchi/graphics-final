@@ -104,7 +104,8 @@ int main() {
 		cerr << it->first << "\n";
 	}
 
-	miTest = new ModelInstance("test");
+	//miTest = new ModelInstance("test");
+	miTest = new ModelInstance("sample");
 	miTest->setLocation(Vect4 (0,0,-2));
 	miTest->setScale(1);
 

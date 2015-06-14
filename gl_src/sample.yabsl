@@ -3,6 +3,8 @@ model sample {
 	mesh b { loadfromfile block1.obj; }
 	mesh c { loadfromfile block1.obj; }
 
+	var x
+
 	transform a {
 		t 0 0 0 ;
 	}
@@ -11,11 +13,11 @@ model sample {
 		t 0.4 1 0   ;
 	}
 	transform c {
-		r 0 0 2.7 ;
+		r 0 0 x ;
 		t 0.2 1 0    ;
 	}
 
-	#anim foo {
-		#vary x { }
-#	}
+	anim default {
+		vary x {0,0;0.5,3.14;1,0 };
+	}
 }
