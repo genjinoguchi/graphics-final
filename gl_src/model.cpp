@@ -212,7 +212,7 @@ void ModelInstance::prepareTransforms() {
 
 	//Check that an animation exists for the current state
 	if(m->anims.count(currstate)) {
-		m->anims[currstate].prepareVars(&(m->vars), animtime);
+		m->anims[currstate]->prepareVars(&(m->vars), animtime);
 	} else {
 		cerr << "Error: no animation named \"" << currstate << "\"\n";
 	}
@@ -233,7 +233,7 @@ void ModelInstance::update(double time) {
 		return;
 	}
 
-	Anim* animP = &(m->anims[currstate]);
+	Anim* animP = m->anims[currstate];
 	double duration = animP->duration;
 	
 	animtime += time;

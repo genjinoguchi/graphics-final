@@ -72,7 +72,7 @@ public:
 	TransformSequence* getTransform(string name);
 
 	//set anims directly, since they're public
-	unordered_map<string, Anim> anims;
+	unordered_map<string, Anim*> anims;
 	unordered_map<string, TransformSequence> transforms; //should be one for each mesh
 
 	var_hash vars;
