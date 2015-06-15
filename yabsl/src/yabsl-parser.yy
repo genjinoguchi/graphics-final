@@ -63,6 +63,7 @@
 %token					MODEL_IDENT 		"new-model"
 %token					MESH_IDENT 			"new-mesh"
 %token					TRANS_IDENT 		"new-transform"
+%token 					VARY_IDENT			"new-vary"
 %token					VAR_IDENT			"new-var"
 %token 					ANIM_IDENT			"new-anim"
 %token 					NEW_LINE			"\n"
@@ -83,6 +84,7 @@
 %type 	<std::string> 								ANIM
 %type 	<std::vector<std::vector<std::string> > > 	ANIM_BLOCK
 %type 	<std::vector<std::vector<std::string> > > 	anim-directives
+%type 	<std::vector<std::vector<VARY_BLOCK
 %type 	<std::vector<std::string> >					directive
 %type 	<std::vector<std::string> >					args
 %type 	<std::string>								unit
@@ -134,14 +136,14 @@ MODEL : "new-model" "id"
 			driver.modelName = $2;
 			driver.print_debug (std::string ("Creating new model: ") + driver.modelName);
 
-			Model::models[$2];
+//			Model::models[$2];
 	  	}
 	  ;
 
 VAR : "new-var" "id" ";"
 	  {
 	      driver.print_debug (std::string ("Found new var: ") + $2);
-	      Model::models[driver.modelName].addVar($2);
+//	      Model::models[driver.modelName].addVar($2);
 
 		  $$ = $2;
 	  }
@@ -156,19 +158,19 @@ MESH : "new-mesh" "id" MESH_BLOCK
 			*/
 			driver.print_debug (std::string ("Creating new mesh: ") + $2);
 			
-			Mesh *m = new Mesh();
+//			Mesh *m = new Mesh();
 			for (int i=0; i<$3.size(); i++) {
-				m->doCommand($3[i]);
+//				m->doCommand($3[i]);
 			}
 
-			Model::models[driver.modelName].addChild($2, m);
+//			Model::models[driver.modelName].addChild($2, m);
 	   }
 	 ;
 
 TRANSFORM : "new-transform" "id" TRANS_BLOCK
 		    {
 			    driver.print_debug (std::string ("Creating new transform: ") + $2);
-				Model::models[driver.modelName].addTransform ($2);
+//				Model::models[driver.modelName].addTransform ($2);
 		 		/* 
 				 * Add the value of TRANS_BLOCK
 				 * to a new transform object.
@@ -178,8 +180,8 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 				// It would be better to use iterators, but
 				// there would be way too many "std::"'s.
 				for (int i=0; i<$3.size (); i++) {
-					Model::models[driver.modelName].getTransform ($2)->
-						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
+//					Model::models[driver.modelName].getTransform ($2)->
+//						addTransformElement ($3[i][0],$3[i][1],$3[i][2],$3[i][3]);
 				}
 
 				//driver.model.addTransform($2);
@@ -190,7 +192,7 @@ TRANSFORM : "new-transform" "id" TRANS_BLOCK
 ANIM : "new-anim" "id" ANIM_BLOCK
 	   {
 	       driver.print_debug (std::string("Creating new anim: ") + $2);
-		   Model::models[driver.modelName].anims[$2];
+//		   Model::models[driver.modelName].anims[$2];
 		   /* 
 		    * Parse through ANIM_BLOCK to add methods to 
 			* the newly created anim object.
@@ -206,9 +208,9 @@ ANIM : "new-anim" "id" ANIM_BLOCK
 		   
 		   for (int i=0; i<$3.size (); i++) {
 			   if ($3[i][0].compare (varyToken)) {
-			       Model::models[driver.getModelName]
-				       .anims[$2]
-					   .addFunc($3[i][1], new AnimFunc());
+//			       Model::models[driver.getModelName]
+//				       .anims[$2]
+//					   .addFunc($3[i][1], new AnimFunc());
 			   } else if ($3[i][0].compare (durationToken)) {
 
 			   } else if ($3[i][0].compare (nextToken)) { 

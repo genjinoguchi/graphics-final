@@ -115,6 +115,10 @@ WHITESPACE  [ \t\r]+
 	driver.print_debug (loc, "Found new-anim identifier");
 	return yy::yabsl_parser::make_ANIM_IDENT (loc);
 }
+<BLOCK>"vary"					{
+	driver.print_debug (loc, "Found new-vary identifier");
+	return yy:yabsl_parser::make_VARY_IDENT (loc);
+}
 <BLOCK>"var"					{
 	driver.print_debug (loc, "Found new-var identifier");
 	return yy::yabsl_parser::make_VAR_IDENT (loc);

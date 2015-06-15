@@ -3,7 +3,7 @@ model sample {
 	mesh b { loadfromfile block1.obj; }
 	mesh c { loadfromfile block1.obj; }
 
-	var x
+	var x;
 
 	transform a {
 		t 0 0 0 ;

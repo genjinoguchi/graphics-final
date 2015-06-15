@@ -17,7 +17,7 @@ sources:
 	flex -o yabsl-scanner.cc yabsl-scanner.ll
 
 test:
-	./a.out ../../tests/test.yabsl
+	./a.out ../../gl_src/sample.yabsl
 
 clean:
 	rm -f yabsl-scanner.cc yabsl-parser.cc yabsl-parser.hh
