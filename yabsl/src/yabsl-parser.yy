@@ -24,6 +24,7 @@
 	#include <vector>
 	#include <utility>
 	#include <unordered_map>
+	#include "model.h"
 
 	class yabsl_driver;
 	
@@ -52,7 +53,6 @@
 %code
 {
 	#include "yabsl-driver.hh"
-	#include "model.h"
 }
 
 /* ========================= TOKENS ========================= */	
