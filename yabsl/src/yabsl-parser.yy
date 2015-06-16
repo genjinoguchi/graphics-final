@@ -84,8 +84,8 @@
 %type 	<std::vector<std::vector<std::string> > > 	MESH_BLOCK
 %type 	<std::vector<std::vector<std::string> > >	mesh-directives
 %type 	<std::string> 								ANIM
-%type 	<Anim>									 	ANIM_BLOCK
-%type 	<Anim>									 	anim-directives
+%type 	<Anim*>									 	ANIM_BLOCK
+%type 	<Anim*>									 	anim-directives
 %type 	<std::pair<string, std::vector<std::pair<int, int> > > >	ANIM_VARY
 %type 	<std::vector<std::pair<int, int> > >		DOUBLE_BLOCK
 %type 	<std::vector<std::pair<int, int> > >		DOUBLES
@@ -199,7 +199,9 @@ ANIM : "new-anim" "id" ANIM_BLOCK
 	   {
 	       driver.print_debug (std::string("Creating new anim: ") + $2);
 		   Model::models[driver.modelName].anims[$2];
-	       Model::models[driver.modelName].anims[$2] = &$3;
+	       Model::models[driver.modelName].anims[$2] = $3;
+		   
+		   delete $3;
 	   }
 	   ;
 
@@ -270,21 +272,20 @@ anim-directives : ANIM_VARY anim-directives
 					  for (int i=0; i<$1.second.size (); i++) {
 					      tempFunc->addOrderedPair(($1.second)[i].first, ($1.second)[i].second);
 					  }
-					  $2.addFunc($1.first, tempFunc);
+					  $2->addFunc($1.first, tempFunc);
 					  delete tempFunc;
 				  }
 				| ANIM_DURATION anim-directives
 				  {
-				      $2.duration = $1;
+				      $2->duration = $1;
 				  }
 				| ANIM_NEXT anim-directives
 				  {
-				      $2.next = $1;
+				      $2->next = $1;
 				  }
 				| %empty
 				  {
-				      Anim tmp;
-					  $$ = tmp;
+					  $$ = new Anim();
 				  }
 				;
 ANIM_VARY : "anim-vary" "id" DOUBLE_BLOCK
