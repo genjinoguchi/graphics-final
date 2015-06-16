@@ -18,6 +18,7 @@ model sample {
 	}
 
 	anim default {
-		vary x {0,0;0.5,3.14;1,0 };
+		duration 4;
+		vary x {0,0;0.5,3.14;1,0 ;}
 	}
 }
