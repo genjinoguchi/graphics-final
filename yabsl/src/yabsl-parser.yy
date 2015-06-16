@@ -299,7 +299,7 @@ DOUBLE_BLOCK : "{" DOUBLES "}"
 			   }
 DOUBLES : DOUBLES "id" "id" ";"
 		  {
-		      $$.push_back(std::make_pair(std::stod($1), std::stod($2)));
+		      $$.push_back(std::make_pair(std::stod($2), std::stod($3)));
 		  }
 		| %empty
 		  {
