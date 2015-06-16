@@ -66,7 +66,7 @@ int main() {
 	//Prepare animation
 	Model::models["test"].addVar("slide_sphere");
 	Model::models["test"].addVar("torus_spin");
-	Model::models["test"].anims["default"];
+	Model::models["test"].anims["default"] = new Anim();
 	//Model::models["test"].anims["default"].addFunc("slide_sphere", AnimFunc::constFunc(8));
 
 	//Setup function for sphere anim
@@ -76,8 +76,8 @@ int main() {
 	tempfunc->addOrderedPair(1, -1);
 	
 	//setup sphere anim
-	Model::models["test"].anims["default"].addFunc("slide_sphere", tempfunc);
-	Model::models["test"].anims["default"].duration = 5;
+	Model::models["test"].anims["default"]->addFunc("slide_sphere", tempfunc);
+	Model::models["test"].anims["default"]->duration = 5;
 
 
 	//setup function for torus anim
@@ -85,8 +85,8 @@ int main() {
 	tempfunc->addOrderedPair(0, 0);
 	tempfunc->addOrderedPair(1, 6.28);
 	
-	Model::models["test"].anims["default"].addFunc("torus_spin", tempfunc);
-	Model::models["test"].anims["default"].duration = 5;
+	Model::models["test"].anims["default"]->addFunc("torus_spin", tempfunc);
+	Model::models["test"].anims["default"]->duration = 5;
 
 
 	//add transforms for children

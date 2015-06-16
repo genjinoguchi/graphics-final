@@ -116,8 +116,20 @@ WHITESPACE  [ \t\r]+
 	return yy::yabsl_parser::make_ANIM_IDENT (loc);
 }
 <BLOCK>"vary"					{
-	driver.print_debug (loc, "Found new-vary identifier");
-	return yy:yabsl_parser::make_VARY_IDENT (loc);
+	driver.print_debug (loc, "Found anim-vary identifier");
+	return yy::yabsl_parser::make_VARY_IDENT (loc);
+}
+<BLOCK>"duration"				{
+	driver.print_debug (loc, "Found anim-duration identifier");
+	return yy::yabsl_parser::make_DURATION_IDENT (loc);
+}
+<BLOCK>"next"					{
+	driver.print_debug (loc, "Found anim-next identifier");
+	return yy::yabsl_parser::make_NEXT_IDENT (loc);
+}
+<BLOCK>"animate"				{
+	driver.print_debug (loc, "Found anim-animate identifier");
+	return yy::yabsl_parser::make_ANIMATE_IDENT (loc);
 }
 <BLOCK>"var"					{
 	driver.print_debug (loc, "Found new-var identifier");
