@@ -68,7 +68,6 @@
 %token 					VARY_IDENT			"anim-vary"
 %token 					DURATION_IDENT		"anim-duration"
 %token 					NEXT_IDENT			"anim-next"
-%token 					ANIMATE_IDENT		"anim-animate"
 %token 					NEW_LINE			"\n"
 %token 	<std::string>	IDENTIFIER 			"id"
 %token 					SEMICOLON			";"
@@ -92,7 +91,6 @@
 %type 	<std::vector<std::pair<int, int> > >		DOUBLES
 %type 	<double> 									ANIM_DURATION
 %type 	<std::string> 								ANIM_NEXT
-%type 	<std::string> 								ANIM_ANIMATE
 %type 	<std::vector<std::string> >					directive
 %type 	<std::vector<std::string> >					args
 %type 	<std::string>								unit
@@ -278,10 +276,6 @@ anim-directives : ANIM_VARY anim-directives
 				  {
 				      $2.duration = $1;
 				  }
-				| ANIM_ANIMATE anim-directives
-				  {
-				      $2.animate = $1;
-				  }
 				| ANIM_NEXT anim-directives
 				  {
 				      $2.next = $1;
@@ -322,12 +316,6 @@ ANIM_NEXT : "anim-next" "id" ";"
 				$$ = $2;
 			}
 		  ;
-ANIM_ANIMATE : "anim-animate" "id" ";"
-			   {
-			       $$ = $2; 
-			   }
-			 ;
-
 
 
 

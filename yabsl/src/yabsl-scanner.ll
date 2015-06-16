@@ -127,10 +127,6 @@ WHITESPACE  [ \t\r]+
 	driver.print_debug (loc, "Found anim-next identifier");
 	return yy::yabsl_parser::make_NEXT_IDENT (loc);
 }
-<BLOCK>"animate"				{
-	driver.print_debug (loc, "Found anim-animate identifier");
-	return yy::yabsl_parser::make_ANIMATE_IDENT (loc);
-}
 <BLOCK>"var"					{
 	driver.print_debug (loc, "Found new-var identifier");
 	return yy::yabsl_parser::make_VAR_IDENT (loc);
