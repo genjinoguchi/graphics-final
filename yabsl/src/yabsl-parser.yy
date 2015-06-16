@@ -200,8 +200,6 @@ ANIM : "new-anim" "id" ANIM_BLOCK
 	       driver.print_debug (std::string("Creating new anim: ") + $2);
 		   Model::models[driver.modelName].anims[$2];
 	       Model::models[driver.modelName].anims[$2] = $3;
-		   delete $3;
-		   driver.print_debug (std::string("Test print."));
 	   }
 	   ;
 
