@@ -271,6 +271,7 @@ anim-directives : ANIM_VARY anim-directives
 					      tempFunc->addOrderedPair(($1.second)[i].first, ($1.second)[i].second);
 					  }
 					  $2.addFunc($1.first, tempFunc);
+					  delete tempFunc;
 				  }
 				| ANIM_DURATION anim-directives
 				  {
@@ -284,7 +285,6 @@ anim-directives : ANIM_VARY anim-directives
 				  {
 				      Anim tmp;
 					  $$ = tmp;
-					  delete tmp;
 				  }
 				;
 ANIM_VARY : "anim-vary" "id" DOUBLE_BLOCK
